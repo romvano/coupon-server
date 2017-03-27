@@ -1,5 +1,6 @@
 from flask import Flask, session, jsonify, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.contrib.fixers import ProxyFix
 
 from models.user.User import User
 
@@ -49,5 +50,8 @@ def logout():
 def test_session():
 	return jsonify({ 'code': 0, 'message': 'wonderful!' })
 
+app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
-    app.run()
+	print 1
+    app.run(host='0.0.0.0')
+
