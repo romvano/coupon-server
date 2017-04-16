@@ -115,8 +115,6 @@ def upload_file():
             return redirect(url_for('uploaded_file',
                                     filename=filename))
 
-app.wsgi_app = ProxyFix(app.wsgi_app)
 if __name__ == '__main__':
-	print 1
-	app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0')
 
