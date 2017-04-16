@@ -50,4 +50,4 @@ def test_session():
 	return jsonify({ 'code': 0, 'message': 'wonderful!' })
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
