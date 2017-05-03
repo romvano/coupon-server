@@ -1,23 +1,27 @@
 from flask import Flask
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager
 
-from models import User
-from api.host import host
+from models.user import User
+from api.host import host_bp
+from api.client import client_bp
+
 
 app = Flask(__name__)
 app.config.from_object('config')
 app.secret_key = 'Afe454_gjklr993mkl2nFsdfGRrrggReQcBmm'
 
-# configure login manager
 lm = LoginManager()
 lm.init_app(app)
 
-app.register_blueprint(host, url_prefix='/api/host/')
-app.register_blueprint(host, url_prefix='/api/barmen/')
+app.register_blueprint(host_bp, url_prefix='/api/host/')
+app.register_blueprint(host_bp, url_prefix='/api/barmen/')
+app.register_blueprint(client_bp, url_prefix='/api/client/')
+
 
 @lm.user_loader
 def load_user(id):
     return User('test_user', 'password')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
+
