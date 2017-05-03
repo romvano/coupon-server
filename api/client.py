@@ -1,10 +1,14 @@
-from flask import Blueprint, session, jsonify, request, redirect, url_for
+import os
+
+from flask import Blueprint, session, jsonify, request, redirect, url_for, send_from_directory
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.utils import secure_filename
 
 from models.user import User
 from models.shop import Shop
+
+UPLOAD_FOLDER = os.path.split(__file__)[0] + "/.." + "/static/img"
 
 client_bp = Blueprint('client', __name__)
 
@@ -59,3 +63,9 @@ def get_shops():
 		shopDict = {"title": shop.title, "description": shop.description, "logo": shop.logo}
 		shopList.append(shopDict)
 	return jsonify({ 'code': 0, 'hosts':  shopList})
+
+
+@client_bp.route('upload/<filename>', methods=['GET'])
+@login_required
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
