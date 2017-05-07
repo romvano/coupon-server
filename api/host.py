@@ -49,21 +49,21 @@ def login():
     data = dict((k, v) for (k, v) in request.json.items())
     login = data.get('login', None)
     password = data.get('password', None)
-    isHosted = 0
+    isHosted = False
     current_id = get_id(login, password)
+    if shops[current_id].id != 0:
+            isHosted = True
     if current_id != 0:
-        if shops[current_id].id != 0:
-            isHosted = 1
         if 'username' in session:
             if current_user and session['username'] == login:
                 return jsonify({ 'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted })
             else:
-                return jsonify({ 'code': 1, 'message': 'You are already logged in as another', 'isHosted': 0})
+                return jsonify({ 'code': 1, 'message': 'You are already logged in as another', 'isHosted': False})
         user = User(login, password)
         login_user(user)
         session['username'] = login
         return jsonify({ 'code': 0, 'message': 'Logged in', 'isHosted': isHosted })
-    return jsonify({ 'code': 1, 'message': 'Wrong credentials', 'isHosted': 0})
+    return jsonify({ 'code': 1, 'message': 'Wrong credentials', 'isHosted': False})
 
 @host_bp.route('logout/', methods=['POST'])
 @login_required
