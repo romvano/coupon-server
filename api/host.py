@@ -49,27 +49,35 @@ def login():
     data = dict((k, v) for (k, v) in request.json.items())
     login = data.get('login', None)
     password = data.get('password', None)
-    isHosted = False
+    isHosted = 0
     current_id = get_id(login, password)
     if current_id != 0:
         if shops[current_id].id != 0:
-            isHosted = True
+            isHosted = 1
         if 'username' in session:
             if current_user and session['username'] == login:
                 return jsonify({ 'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted })
             else:
-                return jsonify({ 'code': 1, 'message': 'You are already logged in as another', 'isHosted': False})
+                return jsonify({ 'code': 1, 'message': 'You are already logged in as another', 'isHosted': 0})
         user = User(login, password)
         login_user(user)
         session['username'] = login
         return jsonify({ 'code': 0, 'message': 'Logged in', 'isHosted': isHosted })
-    return jsonify({ 'code': 1, 'message': 'Wrong credentials', 'isHosted': False})
+    return jsonify({ 'code': 1, 'message': 'Wrong credentials', 'isHosted': 0})
 
 @host_bp.route('logout/', methods=['POST'])
 @login_required
 def logout():
     session.pop('username', None)
     logout_user()
+    return jsonify({ 'code': 0 })
+
+@host_bp.route('edithost/', methods=['POST'])
+@login_required
+def edit_host():
+    data = dict((k, v) for (k, v) in request.json.items())
+    current_id = data.get('id', None)
+    password = data.get('password', None)
     return jsonify({ 'code': 0 })
 
 @host_bp.route('testsession/', methods=['GET'])
