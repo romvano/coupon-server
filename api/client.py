@@ -13,12 +13,6 @@ UPLOAD_FOLDER = os.path.split(__file__)[0] + "/.." + "/static/img"
 client_bp = Blueprint('client', __name__)
 
 clients = list()
-shops = list()
-
-i = 0
-while i < 10:
-    shops.append(Shop(iD = i, title = "shop" + str(i), description = "Best cafe" + str(i)))
-    i = i + 1
 
 @client_bp.route('register/', methods=['POST'])
 def register():
