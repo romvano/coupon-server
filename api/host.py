@@ -56,8 +56,15 @@ def login():
     if current_id != 0:
         if 'username' in session:
             if current_user and session['username'] == login:
+                session.pop('username', None)
+                logout_user()
+                user = User(login, password)
+                login_user(user)
+                session['username'] = login
                 return jsonify({ 'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted })
             else:
+                session.pop('username', None)
+                logout_user()
                 return jsonify({ 'code': 1, 'message': 'You are already logged in as another', 'isHosted': False})
         user = User(login, password)
         login_user(user)
