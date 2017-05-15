@@ -2,6 +2,7 @@ from flask import Blueprint, session, jsonify, request
 from flask_login import login_required, login_user, logout_user, current_user
 from models.user import User
 from models.host import Host
+import logging
 
 host_bp = Blueprint('host_bp', __name__)
 
@@ -22,9 +23,9 @@ while i < 10:
         address='Pushkina', time_open='9:00', time_close='23:00', logo = 'jhdun.jpg'))
     i = i + 1
 
-def get_id(login, password):
+def get_id(login):
     for barmen in barmens:
-            if barmen.login == login and barmen.password == password:
+            if barmen.login == login
                 return barmen.id
     return 0
 
@@ -50,7 +51,7 @@ def login():
     login = data.get('login', None)
     password = data.get('password', None)
     isHosted = False
-    current_id = get_id(login, password)
+    current_id = get_id(login)
     if shops[current_id].id != 0:
             isHosted = True
     if current_id != 0:
@@ -83,9 +84,23 @@ def logout():
 @login_required
 def edit_host():
     data = dict((k, v) for (k, v) in request.json.items())
-    current_id = data.get('id', None)
-    password = data.get('password', None)
-    return jsonify({ 'code': 0 })
+    title = data.get('title', None)
+    description = data.get('description', None)
+    address = data.get('address', None)
+    time_open = data.get('time_open', None)
+    time_close = data.get('time_close', None)
+    current_id = get_id(session['username'])
+    if description != None:
+        shops[current_id].id != current_id
+        shops[current_id].description = description
+        shops[current_id].title = title
+        shops[current_id].address = address
+        shops[current_id].time_open = time_open
+        shops[current_id].time_close = time_close
+        logging.debug(description)
+        return jsonify({ 'code': 0 })
+    else
+        return jsonify({ 'code': 1 })
 
 @host_bp.route('testsession/', methods=['GET'])
 @login_required
