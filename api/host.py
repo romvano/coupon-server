@@ -25,7 +25,7 @@ while i < 10:
 
 def get_id(login):
     for barmen in barmens:
-            if barmen.login == login
+            if barmen.login == login:
                 return barmen.id
     return 0
 
@@ -97,9 +97,9 @@ def edit_host():
         shops[current_id].address = address
         shops[current_id].time_open = time_open
         shops[current_id].time_close = time_close
-        logging.debug(description)
+        print(description)
         return jsonify({ 'code': 0 })
-    else
+    else:
         return jsonify({ 'code': 1 })
 
 @host_bp.route('testsession/', methods=['GET'])
