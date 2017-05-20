@@ -1,13 +1,25 @@
 from flask import Flask
 from flask_login import LoginManager
 
+from extentions import mysql
 from models.user import User
 from api.host import host_bp
 from api.client import client_bp
 
+from flaskext.mysql import MySQL
+
+
+app = Flask(__name__)
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = '04151614'
+app.config['MYSQL_DATABASE_DB'] = 'bonus_db'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
+
 app = Flask(__name__)
 app.config.from_object('config')
 app.secret_key = 'Afe454_gjklr993mkl2nFsdfGRrrggReQcBmm'
+
 
 app.register_blueprint(host_bp, url_prefix='/api/host/')
 app.register_blueprint(host_bp, url_prefix='/api/barmen/')
@@ -21,4 +33,4 @@ def load_user(id):
     return User('test_user', 'password')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', threaded=True)
