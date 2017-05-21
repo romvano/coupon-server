@@ -7,7 +7,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 
 from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_STATISTIC, SELECT_INFO, EDIT_HOST, \
-    UPLOAD_PHOTO
+    UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER
 from extentions import mysql
 from models.host import Host
 from models.user import User
@@ -34,15 +34,14 @@ while i < 10:
     i = i + 1
 
 
-def get_id(login, password):
-    for barmen in barmens:
-        if barmen.login == login and barmen.password == password:
-            return barmen.id
-    # conn = mysql.connect()
-    # cursor = conn.cursor()
-    # cursor.execute("SELECT host_id FROM host WHERE user_id = " + user_id)
-    # host_id = cursor.fetchone()[0]
-    # return host_id
+def get_id(user_id):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT host_id FROM host WHERE user_id = " + str(user_id))
+    if cursor.rowcount == 0:
+        return None
+    host_id = cursor.fetchone()[0]
+    return host_id
 
 
 @host_bp.route('register/', methods=['POST'])
@@ -51,15 +50,16 @@ def register():
     data = dict((k, v) for (k, v) in request.json.items())
     login = data.get('login', None)
     password = data.get('password', None)
-    if login != None and password != None:
-        for barmen in barmens:
-            if barmen.login == login:
-                return jsonify({'code': 1, 'message': 'already registered'})
-        barmens.append(User(login, password, barmen_counter))
-        shops.append(Host())
-        barmen_counter = barmen_counter + 1
-        return jsonify({'code': 0, 'message': 'you are registered'})
-    return jsonify({'code': 1, 'message': 'wrong login/password'})
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(CHECK_USER_FROM_LOGIN, [login])
+    if cursor.rowcount != 0:
+        conn.close()
+        return jsonify({'code': 1, 'message': 'already registered'})
+    cursor.execute(INSERT_USER, [login, password])
+    conn.commit()
+    conn.close()
+    return jsonify({'code': 0, 'message': 'you are registered'})
 
 
 @host_bp.route('login/', methods=['POST'])
@@ -68,27 +68,38 @@ def login():
     login = data.get('login', None)
     password = data.get('password', None)
     isHosted = False
-    current_id = get_id(login, password)
-    if shops[current_id].id != 0:
+
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(GET_USER_FROM_CREDENTAIL, [login, password])
+    if cursor.rowcount == 0:
+        conn.close()
+        return jsonify({'code': 1, 'message': 'Wrong credentials', 'isHosted': False})
+    user_id \
+        = cursor.fetchone()[0]
+    host_id = get_id(user_id)
+
+    if host_id != None:
         isHosted = True
-    if current_id != 0:
-        if 'username' in session:
-            if current_user and session['username'] == login:
-                session.pop('username', None)
-                logout_user()
-                user = User(login, password)
-                login_user(user)
-                session['id'] = login
-                return jsonify({'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted})
-            else:
-                session.pop('username', None)
-                logout_user()
-                return jsonify({'code': 1, 'message': 'You are already logged in as another', 'isHosted': False})
-        user = User(login, password)
-        login_user(user)
-        session['username'] = login
-        return jsonify({'code': 0, 'message': 'Logged in', 'isHosted': isHosted})
-    return jsonify({'code': 1, 'message': 'Wrong credentials', 'isHosted': False})
+    if 'host_id' in session:
+        if current_user and session['host_id'] == host_id:
+            session.pop('host_id', None)
+            logout_user()
+            user = User(login, password)
+            login_user(user)
+            session['id'] = host_id
+            conn.close()
+            return jsonify({'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted})
+        else:
+            session.pop('host_id', None)
+            logout_user()
+            conn.close()
+            return jsonify({'code': 1, 'message': 'You are already logged in as another', 'isHosted': False})
+    user = User(login, password)
+    login_user(user)
+    session['host_id'] = host_id
+    conn.close()
+    return jsonify({'code': 0, 'message': 'Logged in', 'isHosted': isHosted})
 
 
 @host_bp.route('logout/', methods=['POST'])
@@ -135,8 +146,9 @@ def get_statistic(host_id):
     return jsonify({"code": 0, "response": response})
 
 
-@host_bp.route('<host_id>/info/', methods=['GET'])
-def get_info(host_id):
+@host_bp.route('info/', methods=['GET'])
+def get_info():
+    host_id = session['host_id']
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute(SELECT_INFO, [host_id])
@@ -162,7 +174,7 @@ def edit_host_info():
     cursor = conn.cursor()
 
     try:
-        cursor.execute(EDIT_HOST, [title,description,address,time_open,time_close, host_id])
+        cursor.execute(EDIT_HOST, [title, description, address, time_open, time_close, host_id])
         conn.commit()
         if (conn.affected_rows() > 0):
             response = {'code': 0, 'message': 'Данные о заведении успешно изменены'}
@@ -226,6 +238,7 @@ def test_session():
 @host_bp.route('media/<filename>', methods=['GET'])
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
 
 @host_bp.route('<host_id>/upload/', methods=['POST'])
 def upload(host_id):

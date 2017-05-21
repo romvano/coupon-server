@@ -17,3 +17,9 @@ EDIT_HOST = '''UPDATE host SET title = %s, description = %s, address = %s, time_
                WHERE host_id = %s;'''
 
 UPLOAD_PHOTO = '''UPDATE host SET profile_image = %s WHERE host_id = %s;'''
+
+GET_USER_FROM_CREDENTAIL = '''SELECT user_id FROM user WHERE login = %s and password = %s;'''
+
+CHECK_USER_FROM_LOGIN = '''SELECT user_id FROM user WHERE login = %s;'''
+
+INSERT_USER = '''INSERT INTO user (login, password) VALUES (%s, %s)'''
