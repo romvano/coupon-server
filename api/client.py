@@ -6,6 +6,7 @@ from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.utils import secure_filename
 
 from api.host import shops
+from api.queries import SELECT_ALL_HOSTS
 from extentions import mysql
 from models.user import User
 from models.shop import Shop
@@ -60,23 +61,29 @@ def get_shops():
     client_id = data.get("client_id", None)
 
     cursor = mysql.get_db().cursor()
+
+    cursor.execute(SELECT_ALL_HOSTS)
+    all_hosts = [i[0] for i in cursor.fetchall()]
     cursor.execute("SELECT host_id, points FROM client_host WHERE client_id = " + str(client_id))
     hostPoints = cursor.fetchall()
+
     hostsList = []
     for i in hostPoints:
         host_id = i[0]
         points = i[1]
-        cursor.execute("SELECT title, description, address, time_open, time_close FROM host WHERE host_id = " + str(host_id))
+        cursor.execute("SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(host_id))
         host = cursor.fetchone()
         host += (points, )
         hostsList.append({"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
-                    "time_close": host[4], "profile_image": "jhdun.jpg", "points": host[5]})
-        
-    print hostsList
-    # shopList = list()
-    # for shop in shops:
-    #     shopDict = {"title": shop.title, "description": shop.description, "logo": shop.logo}
-    #     shopList.append(shopDict)
+                    "time_close": host[4], "profile_image": host[5], "points": host[6]})
+        if (host_id in all_hosts):
+            all_hosts.remove(host_id)
+    for id in all_hosts:
+        cursor.execute(
+            "SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(id))
+        host = cursor.fetchone()
+        hostsList.append({"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
+                          "time_close": host[4], "profile_image": host[5], "points": 0})
     cursor.close()
     return jsonify({'code': 0, 'hosts': hostsList})
 

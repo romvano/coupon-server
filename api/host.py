@@ -7,7 +7,8 @@ from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 
 from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_STATISTIC, SELECT_INFO, EDIT_HOST, \
-    UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER
+    UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
+    CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql
 from models.host import Host
 from models.user import User
@@ -29,19 +30,19 @@ shops = list()
 
 i = 0
 while i < 10:
-    shops.append(Host(id=i, title="shop" + str(i), description="Best cafe" + str(i),
-                      address='Pushkina', time_open='9:00', time_close='23:00', logo='jhdun.jpg'))
+    shops.append(Host(id = i, title = "shop" + str(i), description = "Best cafe" + str(i), 
+        address='Pushkina', time_open='9:00', time_close='23:00', logo = 'jhdun.jpg'))
     i = i + 1
 
 
-def get_id(user_id):
+def get_id_and_title(user_id):
     conn = mysql.connect()
     cursor = conn.cursor()
-    cursor.execute("SELECT host_id FROM host WHERE user_id = " + str(user_id))
-    if cursor.rowcount == 0:
-        return None
-    host_id = cursor.fetchone()[0]
-    return host_id
+    cursor.execute("SELECT host_id, title FROM host WHERE user_id = " + str(user_id))
+    result = cursor.fetchone()
+    host_id = result[0]
+    title = result[1]
+    return host_id,title
 
 
 @host_bp.route('register/', methods=['POST'])
@@ -57,6 +58,8 @@ def register():
         conn.close()
         return jsonify({'code': 1, 'message': 'already registered'})
     cursor.execute(INSERT_USER, [login, password])
+    cursor.execute(INSERT_HOST, [cursor.lastrowid])
+    session['host_id'] = cursor.lastrowid
     conn.commit()
     conn.close()
     return jsonify({'code': 0, 'message': 'you are registered'})
@@ -75,11 +78,10 @@ def login():
     if cursor.rowcount == 0:
         conn.close()
         return jsonify({'code': 1, 'message': 'Wrong credentials', 'isHosted': False})
-    user_id \
-        = cursor.fetchone()[0]
-    host_id = get_id(user_id)
+    user_id = cursor.fetchone()[0]
+    host_id,title = get_id_and_title(user_id)
 
-    if host_id != None:
+    if title != None:
         isHosted = True
     if 'host_id' in session:
         if current_user and session['host_id'] == host_id:
@@ -87,7 +89,7 @@ def login():
             logout_user()
             user = User(login, password)
             login_user(user)
-            session['id'] = host_id
+            session['host_id'] = host_id
             conn.close()
             return jsonify({'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted})
         else:
@@ -109,19 +111,28 @@ def logout():
     logout_user()
     return jsonify({'code': 0})
 
-
-@host_bp.route('edithost/', methods=['POST'])
+@host_bp.route('create/', methods=['POST'])
 @login_required
-def edit_host():
+def create_host():
     data = dict((k, v) for (k, v) in request.json.items())
-    current_id = data.get('id', None)
-    password = data.get('password', None)
-    return jsonify({'code': 0})
+    print session['host_id']
+    title = data['title']
+    description = data['description']
+    address = data['address']
+    time_open = data['time_open']
+    time_close = data['time_close']
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(UPDATE_NEW_HOST, [title, description, address, time_open, time_close, session['host_id']])
+    session['host_id'] = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return jsonify({ 'code': 0 })
 
 
-@host_bp.route('<host_id>/get_client/<identificator>/', methods=['GET'])
-def get_client(host_id, identificator):
-    print host_id, identificator
+@host_bp.route('get_client/<identificator>/', methods=['GET'])
+def get_client(identificator):
+    host_id = str(session['host_id'])
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute("SELECT points FROM client_host WHERE host_id = " + host_id + " AND client_id = \
@@ -133,8 +144,9 @@ def get_client(host_id, identificator):
     return jsonify(response)
 
 
-@host_bp.route('<host_id>/statistic/', methods=['GET'])
-def get_statistic(host_id):
+@host_bp.route('statistic/', methods=['GET'])
+def get_statistic():
+    host_id = str(session['host_id'])
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute(SELECT_STATISTIC, [host_id])
@@ -147,6 +159,7 @@ def get_statistic(host_id):
 
 
 @host_bp.route('info/', methods=['GET'])
+@login_required
 def get_info():
     host_id = session['host_id']
     conn = mysql.connect()
@@ -160,15 +173,15 @@ def get_info():
 
 
 @host_bp.route('edit_host/', methods=['POST'])
+@login_required
 def edit_host_info():
     data = dict((k, v) for (k, v) in request.json.items())
-    host_id = str(data.get('host_id', None))
-    host = data.get('host', None)
-    title = host['title']
-    description = host['description']
-    address = host['address']
-    time_open = host['time_open']
-    time_close = host['time_close']
+    host_id = str(session['host_id'])
+    title = data['title']
+    description = data['description']
+    address = data['address']
+    time_open = data['time_open']
+    time_close = data['time_close']
 
     conn = mysql.connect()
     cursor = conn.cursor()
@@ -190,10 +203,11 @@ def edit_host_info():
 
 
 @host_bp.route('update_points/', methods=['POST'])
+@login_required
 def update_points():
     data = dict((k, v) for (k, v) in request.json.items())
 
-    host_id = str(data.get('host_id', None))
+    host_id = str(session['host_id'])
     bill = data.get('bill', None)
     is_add = data.get('is_add', None)
     client_identificator = data.get('client_identificator', None)
@@ -201,8 +215,15 @@ def update_points():
     conn = mysql.connect()
     cursor = conn.cursor()
 
+    cursor.execute(CHECK_HOST_CLIENT,[host_id, client_identificator])
+    has_been = cursor.fetchone()
+    if has_been == None:
+        cursor.execute(INSERT_CLIENT_HOST, [host_id,client_identificator])
+        conn.commit()
+
+    # TO_DO: add_percent make dynamic
     if is_add:
-        cursor.execute("SELECT add_percent FROM host WHERE host_id = " + host_id)
+        cursor.execute("SELECT 10 FROM host WHERE host_id = " + host_id)
         add_percent = float(cursor.fetchone()[0]) / 100
         add_points = str(int(bill * add_percent))
         cursor.execute("UPDATE client_host SET points = points + " + add_points + " WHERE host_id = " + host_id + " AND client_id = \
@@ -240,8 +261,10 @@ def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@host_bp.route('<host_id>/upload/', methods=['POST'])
-def upload(host_id):
+@host_bp.route('upload/', methods=['POST'])
+@login_required
+def upload():
+    host_id = str(session['host_id'])
     file = request.files.get("picture")
     filename = secure_filename(file.filename)
     file.save(UPLOAD_FOLDER + "/" + filename)
