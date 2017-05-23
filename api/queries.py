@@ -36,3 +36,5 @@ INSERT_CLIENT_HOST = '''INSERT INTO client_host (client_id, host_id, points)
                         FROM client WHERE identificator = %s;'''
 
 SELECT_ALL_HOSTS = '''SELECT host_id FROM host;'''
+
+SELECT_NAME_IDENTIFICATOR_FROM_CLIENT = '''SELECT name, identificator FROM client WHERE client_id = %s;'''

@@ -7,7 +7,8 @@ from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.utils import secure_filename
 
 from api.host import shops
-from api.queries import SELECT_ALL_HOSTS, CHECK_USER_FROM_LOGIN, INSERT_USER, GET_USER_FROM_CREDENTAIL, INSERT_CLIENT
+from api.queries import SELECT_ALL_HOSTS, CHECK_USER_FROM_LOGIN, INSERT_USER, GET_USER_FROM_CREDENTAIL, INSERT_CLIENT, \
+    SELECT_NAME_IDENTIFICATOR_FROM_CLIENT
 from extentions import mysql
 from models.user import User
 from models.shop import Shop
@@ -18,12 +19,13 @@ client_bp = Blueprint('client', __name__)
 
 clients = list()
 
+
 def get_id(user_id):
     conn = mysql.connect()
     cursor = conn.cursor()
     cursor.execute("SELECT client_id FROM client WHERE user_id = " + str(user_id))
     result = cursor.fetchone()
-    client_id= result[0]
+    client_id = result[0]
     return client_id
 
 
@@ -60,7 +62,7 @@ def login_client():
         conn.close()
         return jsonify({'code': 1, 'message': 'Wrong credentials'})
     user_id = cursor.fetchone()[0]
-    client_id= get_id(user_id)
+    client_id = get_id(user_id)
     if 'client_id' in session:
         if current_user and session['client_id'] == client_id:
             session.pop('client_id', None)
@@ -96,16 +98,19 @@ def get_shops():
     for i in hostPoints:
         host_id = i[0]
         points = i[1]
-        cursor.execute("SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(host_id))
+        cursor.execute(
+            "SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(
+                host_id))
         host = cursor.fetchone()
-        host += (points, )
+        host += (points,)
         hostsList.append({"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
-                    "time_close": host[4], "profile_image": host[5], "points": host[6]})
+                          "time_close": host[4], "profile_image": host[5], "points": host[6]})
         if (host_id in all_hosts):
             all_hosts.remove(host_id)
     for id in all_hosts:
         cursor.execute(
-            "SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(id))
+            "SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(
+                id))
         host = cursor.fetchone()
         hostsList.append({"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
                           "time_close": host[4], "profile_image": host[5], "points": 0})
@@ -113,8 +118,21 @@ def get_shops():
     return jsonify({'code': 0, 'hosts': hostsList})
 
 
+@client_bp.route('get_info/', methods=['GET'])
+@login_required
+def get_info():
+    client_id = session['client_id']
+    conn = mysql.connect()
+    cursor = conn.cursor()
+
+    cursor.execute(SELECT_NAME_IDENTIFICATOR_FROM_CLIENT, [client_id])
+    result = cursor.fetchone()
+    name = result[0]
+    identificator = result[1]
+
+    return jsonify({'code': 0, 'name': name, 'identificator': identificator})
+
+
 @client_bp.route('media/<filename>', methods=['GET'])
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
-
-
