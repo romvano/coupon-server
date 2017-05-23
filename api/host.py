@@ -123,9 +123,10 @@ def create_host():
     address = data['address']
     time_open = data['time_open']
     time_close = data['time_close']
+    add_percent = 10
     conn = mysql.connect()
     cursor = conn.cursor()
-    cursor.execute(UPDATE_NEW_HOST, [title, description, address, time_open, time_close, session['host_id']])
+    cursor.execute(UPDATE_NEW_HOST, [title, description, address, time_open, time_close, add_percent, session['host_id']])
     session['host_id'] = cursor.lastrowid
     conn.commit()
     conn.close()
