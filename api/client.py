@@ -133,6 +133,15 @@ def get_info():
     return jsonify({'code': 0, 'name': name, 'identificator': identificator})
 
 
+
 @client_bp.route('media/<filename>', methods=['GET'])
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@client_bp.route('logout/', methods=['POST'])
+@login_required
+def logout():
+    session.pop('client_id', None)
+    logout_user()
+    return jsonify({'code': 0})

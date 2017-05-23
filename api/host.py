@@ -109,7 +109,7 @@ def login():
 @host_bp.route('logout/', methods=['POST'])
 @login_required
 def logout():
-    session.pop('username', None)
+    session.pop('host_id', None)
     logout_user()
     return jsonify({'code': 0})
 
