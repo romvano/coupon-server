@@ -82,11 +82,9 @@ def login_client():
     return jsonify({'code': 0, 'message': 'Logged in'})
 
 
-@client_bp.route('list_hosts/', methods=['POST'])
+@client_bp.route('list_hosts/', methods=['GET'])
 def get_shops():
-    data = dict((k, v) for (k, v) in request.json.items())
-    client_id = data.get("client_id", None)
-
+    client_id = session['client_id']
     cursor = mysql.get_db().cursor()
 
     cursor.execute(SELECT_ALL_HOSTS)
