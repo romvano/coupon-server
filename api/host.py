@@ -156,7 +156,11 @@ def get_statistic():
     operations = cursor.fetchall()
     response = []
     for i in operations:
-        response.append({"date": i[0], "avg_bill": i[1], "income": i[2], "outcome": i[3]})
+        date = str(i[0])
+        avg_bill = str(i[1])
+        income = str(i[2])
+        outcome = str(i[3])
+        response.append({"date": date, "avg_bill": avg_bill, "income": income, "outcome": outcome})
     conn.close()
     return jsonify({"code": 0, "response": response})
 
