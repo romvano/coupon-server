@@ -25,6 +25,8 @@ CHECK_USER_FROM_LOGIN = '''SELECT user_id FROM user WHERE login = %s;'''
 INSERT_USER = '''INSERT INTO user (login, password) VALUES (%s, %s)'''
 
 INSERT_HOST = '''INSERT INTO host (user_id) VALUES (%s);'''
+
+INSERT_CLIENT = '''INSERT INTO client (name, identificator, user_id) VALUES (%s, %s, %s);'''
 UPDATE_NEW_HOST = '''UPDATE host SET title=%s, description=%s, address=%s, time_open=%s, time_close=%s WHERE host_id = %s;'''
 
 CHECK_HOST_CLIENT = '''SELECT * FROM client_host WHERE host_id = %s and client_id = (SELECT client_id FROM client WHERE identificator = %s); '''

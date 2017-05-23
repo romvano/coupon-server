@@ -13,6 +13,8 @@ from extentions import mysql
 from models.host import Host
 from models.user import User
 
+from flask import current_app
+
 UPLOAD_FOLDER = os.path.split(__file__)[0] + "/.." + "/static/img"
 
 host_bp = Blueprint('host_bp', __name__)
@@ -251,8 +253,8 @@ def update_points():
 
 
 @host_bp.route('testsession/', methods=['GET'])
-@login_required
 def test_session():
+    current_app.logger.info('grolsh')
     return jsonify({'code': 0, 'message': 'wonderful!'})
 
 

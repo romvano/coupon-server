@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from flask import Blueprint, session, jsonify, request, redirect, url_for, send_from_directory
 from flask_login import login_required, login_user, logout_user, current_user
@@ -6,7 +7,7 @@ from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.utils import secure_filename
 
 from api.host import shops
-from api.queries import SELECT_ALL_HOSTS
+from api.queries import SELECT_ALL_HOSTS, CHECK_USER_FROM_LOGIN, INSERT_USER, GET_USER_FROM_CREDENTAIL, INSERT_CLIENT
 from extentions import mysql
 from models.user import User
 from models.shop import Shop
@@ -17,19 +18,33 @@ client_bp = Blueprint('client', __name__)
 
 clients = list()
 
+def get_id(user_id):
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute("SELECT client_id FROM client WHERE user_id = " + str(user_id))
+    result = cursor.fetchone()
+    client_id= result[0]
+    return client_id
+
 
 @client_bp.route('register/', methods=['POST'])
 def register():
     data = dict((k, v) for (k, v) in request.json.items())
     login = data.get('login', None)
     password = data.get('password', None)
-    if login != None and password != None:
-        for user in clients:
-            if user.login == login:
-                return jsonify({'code': 1, 'message': 'already registered'})
-        clients.append(User(login, password))
-        return jsonify({'code': 0, 'message': 'you are registered'})
-    return jsonify({'code': 1, 'message': 'wrong login/password'})
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(CHECK_USER_FROM_LOGIN, [login])
+    if cursor.rowcount != 0:
+        conn.close()
+        return jsonify({'code': 1, 'message': 'already registered'})
+    cursor.execute(INSERT_USER, [login, password])
+    qr = str(uuid.uuid4())
+    cursor.execute(INSERT_CLIENT, [login, qr, cursor.lastrowid])
+    session['client_id'] = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return jsonify({'code': 0, 'message': 'you are registered'})
 
 
 @client_bp.route('login/', methods=['POST'])
@@ -37,22 +52,34 @@ def login_client():
     data = dict((k, v) for (k, v) in request.json.items())
     login = data.get('login', None)
     password = data.get('password', None)
+
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(GET_USER_FROM_CREDENTAIL, [login, password])
+    if cursor.rowcount == 0:
+        conn.close()
+        return jsonify({'code': 1, 'message': 'Wrong credentials'})
+    user_id = cursor.fetchone()[0]
+    client_id= get_id(user_id)
+    if 'client_id' in session:
+        if current_user and session['client_id'] == client_id:
+            session.pop('client_id', None)
+            logout_user()
+            user = User(login, password)
+            login_user(user)
+            session['client_id'] = client_id
+            conn.close()
+            return jsonify({'code': 0, 'message': 'You are already logged in'})
+        else:
+            session.pop('client_id', None)
+            logout_user()
+            conn.close()
+            return jsonify({'code': 1, 'message': 'You are already logged in as another'})
     user = User(login, password)
-    valid = False
-    for user in clients:
-        if user.login == login and user.password == password:
-            valid = True
-    if valid:
-        if 'username' in session:
-            if current_user and session['username'] == login:
-                return jsonify({'code': 0, 'message': 'already logged in'})
-            else:
-                return jsonify({'code': 1, 'message': 'already logged in as another'})
-        user = User(login, password)
-        login_user(user)
-        session['username'] = login
-        return jsonify({'code': 0, 'message': 'logged in'})
-    return jsonify({'code': 1, 'message': 'wrong credentials'})
+    login_user(user)
+    session['client_id'] = client_id
+    conn.close()
+    return jsonify({'code': 0, 'message': 'Logged in'})
 
 
 @client_bp.route('list_hosts/', methods=['POST'])

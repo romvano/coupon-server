@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_login import LoginManager
 
@@ -5,8 +7,6 @@ from extentions import mysql
 from models.user import User
 from api.host import host_bp
 from api.client import client_bp
-
-from flaskext.mysql import MySQL
 
 
 app = Flask(__name__)
