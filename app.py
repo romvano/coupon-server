@@ -11,7 +11,7 @@ from api.client import client_bp
 
 app = Flask(__name__)
 app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = '04151614'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'xz4LpS2FHtAn'
 app.config['MYSQL_DATABASE_DB'] = 'bonus_db'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
