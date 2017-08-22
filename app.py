@@ -10,10 +10,10 @@ from api.client import client_bp
 
 
 app = Flask(__name__)
-app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_USER'] = 't1moon'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'xz4LpS2FHtAn'
-app.config['MYSQL_DATABASE_DB'] = 'bonus_db'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_DB'] = 't1moon$bonus_db'
+app.config['MYSQL_DATABASE_HOST'] = 't1moon.mysql.pythonanywhere-services.com'
 mysql.init_app(app)
 
 app = Flask(__name__)
