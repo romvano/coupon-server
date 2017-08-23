@@ -91,7 +91,7 @@ def get_shops():
 
     cursor.execute(SELECT_ALL_HOSTS)
     all_hosts = [i[0] for i in cursor.fetchall()]
-    cursor.execute("SELECT host_id, points FROM client_host WHERE client_id = " + str(client_id))
+    cursor.execute("SELECT host_id, amount FROM score WHERE client_id = " + str(client_id))
     hostPoints = cursor.fetchall()
 
     hostsList = []

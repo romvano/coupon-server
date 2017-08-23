@@ -138,7 +138,7 @@ def get_client(identificator):
     host_id = str(session['host_id'])
     conn = mysql.connect()
     cursor = conn.cursor()
-    cursor.execute("SELECT points FROM client_host WHERE host_id = " + host_id + " AND client_id = \
+    cursor.execute("SELECT amount FROM score WHERE host_id = " + host_id + " AND client_id = \
                         (SELECT client_id FROM client WHERE identificator = '" + identificator + "')")
     points = cursor.fetchone()[0]
     print points
@@ -230,24 +230,24 @@ def update_points():
 
     # TO_DO: add_percent make dynamic
     if is_add:
-        cursor.execute("SELECT 10 FROM host WHERE host_id = " + host_id)
+        cursor.execute("SELECT 10 FROM host WHERE host_id = " + host_id)   # 10 until I create loyalityscheme
         add_percent = float(cursor.fetchone()[0]) / 100
         add_points = str(int(bill * add_percent))
-        cursor.execute("UPDATE client_host SET points = points + " + add_points + " WHERE host_id = " + host_id + " AND client_id = \
+        cursor.execute("UPDATE score SET amount = amount + " + add_points + " WHERE host_id = " + host_id + " AND client_id = \
                                 (SELECT client_id FROM client WHERE identificator = '" + client_identificator + "')")
-        cursor.execute(INSERT_OPERATION_ADD, [host_id, add_points, bill, client_identificator])
+        cursor.execute(INSERT_OPERATION_ADD, [host_id, add_points, 0, client_identificator])
 
         response = {'code': 0, 'message': 'Бонусы были успешно зачислены'}
     else:
-        cursor.execute("SELECT points FROM client_host WHERE host_id = " + host_id + " AND client_id = \
+        cursor.execute("SELECT amount FROM score WHERE host_id = " + host_id + " AND client_id = \
                                 (SELECT client_id FROM client WHERE identificator = '" + client_identificator + "')")
         points = int(cursor.fetchone()[0])
         if points >= bill:
             points = str(points - bill)
             cursor.execute(
-                "UPDATE client_host SET points = " + points + " WHERE host_id = " + host_id + " AND client_id = \
+                "UPDATE score SET amount = " + points + " WHERE host_id = " + host_id + " AND client_id = \
                                             (SELECT client_id FROM client WHERE identificator = '" + client_identificator + "')")
-            cursor.execute(INSERT_OPERATION_WITHDRAW, [host_id, bill, bill, client_identificator])
+            cursor.execute(INSERT_OPERATION_WITHDRAW, [host_id, bill, 1, client_identificator])
 
             response = {'code': 0, 'message': 'Бонусы были успешно списаны'}
         else:
