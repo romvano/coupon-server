@@ -1,9 +1,9 @@
 INSERT_OPERATION_ADD = '''INSERT INTO transactions (client_id, host_id, amount, type_id) 
-                      SELECT client.client_id, %s, %s, 0, %s
+                      SELECT client.client_id, %s, %s, %s
                       FROM client WHERE identificator = %s;'''
 
 INSERT_OPERATION_WITHDRAW = '''INSERT INTO transactions (client_id, host_id, amount, type_id) 
-                      SELECT client.client_id, %s, 0,%s, %s
+                      SELECT client.client_id, %s, %s, %s
                       FROM client WHERE identificator = %s;'''
 
 # SELECT_STATISTIC = '''SELECT DATE(transactions_date), AVG(bill), SUM(income), SUM(outcome) FROM transactions
