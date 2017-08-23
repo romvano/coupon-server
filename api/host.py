@@ -6,7 +6,7 @@ from flask import Blueprint, session, jsonify, request, send_from_directory, app
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 
-from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_STATISTIC, SELECT_INFO, EDIT_HOST, \
+from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_INFO, EDIT_HOST, \
     UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql
@@ -32,7 +32,7 @@ shops = list()
 
 i = 0
 while i < 10:
-    shops.append(Host(id = i, title = "shop" + str(i), description = "Best cafe" + str(i), 
+    shops.append(Host(id = i, title = "shop" + str(i), description = "Best cafe" + str(i),
         address='Pushkina', time_open='9:00', time_close='23:00', logo = 'jhdun.jpg'))
     i = i + 1
 
