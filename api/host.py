@@ -2,7 +2,7 @@
 import os
 
 import MySQLdb
-from flask import Blueprint, session, jsonify, request, send_from_directory, app
+from flask import Blueprint, session, jsonify, request, send_from_directory
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 

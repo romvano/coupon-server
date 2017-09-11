@@ -80,14 +80,14 @@ DEFAULT CHARACTER SET = utf8;
 
 
 -- -----------------------------------------------------
--- Table `t1moon$bonus_db`.`loaylityscheme`
+-- Table `t1moon$bonus_db`.`loyalityscheme`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `t1moon$bonus_db`.`loaylityscheme` ;
+DROP TABLE IF EXISTS `t1moon$bonus_db`.`loyalityscheme` ;
 
-CREATE TABLE IF NOT EXISTS `t1moon$bonus_db`.`loaylityscheme` (
-  `loaylityscheme_id` INT(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `t1moon$bonus_db`.`loyalityscheme` (
+  `loyalityscheme_id` INT(11) NOT NULL,
   `name` VARCHAR(45) NULL DEFAULT NULL,
-  PRIMARY KEY (`loaylityscheme_id`))
+  PRIMARY KEY (`loyalityscheme_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
