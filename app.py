@@ -16,7 +16,7 @@ app.secret_key = 'Afe454_gjklr993mkl2nFsdfGRrrggReQcBmm'
 app.register_blueprint(host_bp, url_prefix='/api/host/')
 app.register_blueprint(host_bp, url_prefix='/api/barmen/')
 app.register_blueprint(client_bp, url_prefix='/api/client/')
-app.register_blueprint(user_bp, url_prefix='api/user/')
+app.register_blueprint(user_bp, url_prefix='/api/user/')
 
 lm.init_app(app)
 

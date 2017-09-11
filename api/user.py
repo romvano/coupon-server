@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask.blueprints import Blueprint
-from flask.globals import g, session
+from flask.globals import g, session, request
 from flask.json import jsonify
 from flask_api.status import HTTP_409_CONFLICT
 from flask_login.utils import login_user, current_user, logout_user
@@ -14,8 +14,13 @@ USER_EXISTS = {'message': 'User exists'}
 
 user_bp = Blueprint('user', __name__)
 
-@user_bp.route('register/', methods=['POST'])
-def authenticate(login, pwd):
+def _get_creds(request):
+    data = dict((k, v) for (k, v) in request.json.items())
+    return data.get('login', None), data.get('password', None)
+
+@user_bp.route('login/', methods=['POST'])
+def authenticate():
+    login, pwd = _get_creds(request)
     if 'login' in session:
         logout()
     user = User(login=login, pwd=pwd)
@@ -27,8 +32,9 @@ def authenticate(login, pwd):
     session['login'] = g.user.login
     return jsonify(SUCCESS)
 
-@user_bp.route('login/', methods=['POST'])
-def register(login, pwd):
+@user_bp.route('register/', methods=['POST'])
+def register():
+    login, pwd = _get_creds(request)
     if 'login' in session:
         return jsonify(ALREADY_AUTHED)
     uid = User.create(login=login, pwd=pwd)
@@ -42,5 +48,6 @@ def register(login, pwd):
 @user_bp.route('logout/', methods=['POST'])
 def logout():
     session.pop('client_id', None)
+    g.user = None
     logout_user()
     return jsonify(SUCCESS)

@@ -3,17 +3,23 @@ import os
 
 import MySQLdb
 from flask import Blueprint, session, jsonify, request, send_from_directory
+from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 
+from api import user
 from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_INFO, EDIT_HOST, \
     UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql
-from models.host import Host
+from models.host import Host, HOST_FIELDS, OWNER_UID, STAFF_UIDS
 from models.user import User
 
 from flask import current_app
+
+SUCCESS = {'code': 0, 'message': 'OK'}
+HOST_CREATION_FAILED = {'message': 'Unabled to create host. Title required'}
+HOST_NOT_FOUND = {'message': 'Host not found'}
 
 UPLOAD_FOLDER = os.path.split(__file__)[0] + "/.." + "/static/img"
 
@@ -30,9 +36,9 @@ while barmen_counter < 10:
 
 shops = list()
 
-i = 0
+i = 1
 while i < 10:
-    shops.append(Host(id = i, title = "shop" + str(i), description = "Best cafe" + str(i),
+    shops.append(Host(uid = i, title = "shop" + str(i), description = "Best cafe" + str(i),
         address='Pushkina', time_open='9:00', time_close='23:00', logo = 'jhdun.jpg'))
     i = i + 1
 
@@ -48,89 +54,35 @@ def get_id_and_title(user_id):
 
 
 @host_bp.route('register/', methods=['POST'])
-def register():
-    global barmen_counter
-    data = dict((k, v) for (k, v) in request.json.items())
-    login = data.get('login', None)
-    password = data.get('password', None)
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(CHECK_USER_FROM_LOGIN, [login])
-    if cursor.rowcount != 0:
-        conn.close()
-        return jsonify({'code': 1, 'message': 'already registered'})
-    cursor.execute(INSERT_USER, [login, password])
-    cursor.execute(INSERT_HOST, [cursor.lastrowid])
-    session['host_id'] = cursor.lastrowid
-    conn.commit()
-    conn.close()
-    return jsonify({'code': 0, 'message': 'you are registered'})
+def register_host():
+    """DEPRECATED"""
+    return user.authenticate()
 
 
 @host_bp.route('login/', methods=['POST'])
 def login():
-    data = dict((k, v) for (k, v) in request.json.items())
-    login = data.get('login', None)
-    password = data.get('password', None)
-    isHosted = False
-
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(GET_USER_FROM_CREDENTAIL, [login, password])
-    if cursor.rowcount == 0:
-        conn.close()
-        return jsonify({'code': 1, 'message': 'Wrong credentials', 'isHosted': False})
-    user_id = cursor.fetchone()[0]
-    host_id,title = get_id_and_title(user_id)
-
-    if title != None:
-        isHosted = True
-    if 'host_id' in session:
-        if current_user and session['host_id'] == host_id:
-            session.pop('host_id', None)
-            logout_user()
-            user = User(login, password)
-            login_user(user)
-            session['host_id'] = host_id
-            conn.close()
-            return jsonify({'code': 0, 'message': 'You are already logged in', 'isHosted': isHosted})
-        else:
-            session.pop('host_id', None)
-            logout_user()
-            conn.close()
-            return jsonify({'code': 1, 'message': 'You are already logged in as another', 'isHosted': False})
-    user = User(login, password)
-    login_user(user)
-    session['host_id'] = host_id
-    conn.close()
-    return jsonify({'code': 0, 'message': 'Logged in', 'isHosted': isHosted})
-
+    """DEPRECATED"""
+    return user.authenticate()
 
 @host_bp.route('logout/', methods=['POST'])
 @login_required
 def logout():
-    session.pop('host_id', None)
-    logout_user()
-    return jsonify({'code': 0})
+    """DEPRECATED"""
+    return user.logout()
 
 @host_bp.route('create/', methods=['POST'])
 @login_required
 def create_host():
     data = dict((k, v) for (k, v) in request.json.items())
-    print session['host_id']
-    title = data['title']
-    description = data['description']
-    address = data['address']
-    time_open = data['time_open']
-    time_close = data['time_close']
-    add_percent = 10
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(UPDATE_NEW_HOST, [title, description, address, time_open, time_close, add_percent, session['host_id']])
-    session['host_id'] = cursor.lastrowid
-    conn.commit()
-    conn.close()
-    return jsonify({ 'code': 0 })
+    data[OWNER_UID] = current_user.uid
+    data[STAFF_UIDS] = {current_user.uid,}.union(data.get(STAFF_UIDS, set()))
+    uid = Host.create(data)
+    if uid is None:
+        return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
+    host = Host(uid=uid)
+    if host is None:
+        return jsonify(HOST_NOT_FOUND), HTTP_404_NOT_FOUND
+    return jsonify(SUCCESS)
 
 
 @host_bp.route('get_client/<identificator>/', methods=['GET'])
@@ -147,22 +99,22 @@ def get_client(identificator):
     return jsonify(response)
 
 
-@host_bp.route('statistic/', methods=['GET'])
-def get_statistic():
-    host_id = str(session['host_id'])
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(SELECT_STATISTIC, [host_id])
-    operations = cursor.fetchall()
-    response = []
-    for i in operations:
-        date = i[0]
-        avg_bill = i[1]
-        income = i[2]
-        outcome = i[3]
-        response.append({"date": date, "avg_bill": avg_bill, "income": income, "outcome": outcome})
-    conn.close()
-    return jsonify({"code": 0, "response": response})
+# @host_bp.route('statistic/', methods=['GET'])
+# def get_statistic():
+#     host_id = str(session['host_id'])
+#     conn = mysql.connect()
+#     cursor = conn.cursor()
+#     cursor.execute(SELECT_STATISTIC, [host_id])
+#     operations = cursor.fetchall()
+#     response = []
+#     for i in operations:
+#         date = i[0]
+#         avg_bill = i[1]
+#         income = i[2]
+#         outcome = i[3]
+#         response.append({"date": date, "avg_bill": avg_bill, "income": income, "outcome": outcome})
+#     conn.close()
+#     return jsonify({"code": 0, "response": response})
 
 
 @host_bp.route('info/', methods=['GET'])

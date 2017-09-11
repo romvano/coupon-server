@@ -10,17 +10,15 @@ DB_PASSWORD = 'password'
 DB_UID = '_id'
 
 class User(UserMixin):
+    """A User model. If no login/pwd provided it fetches from db by uid"""
     def __init__(self, login=None, pwd=None, uid=None):
-        def init(l, p, i):
-            self.login = l
-            self.pwd = p
-            self.uid = i
-
-        if login is not None and pwd is not None:
-            init(login, pwd, uid)
-        elif uid is not None:
-            u = mongo.db.user.find_one({DB_UID: uid})
-            init(u.get(DB_LOGIN), u.get(DB_PASSWORD), uid)
+        if all({login, pwd}):
+            self.login = login
+            self.pwd = pwd
+            self.uid = uid
+        elif uid:
+            self.uid = uid
+            self.fetch()
         else:
             raise ValueError("Either login & pwd or uid must be provided")
 
@@ -35,21 +33,18 @@ class User(UserMixin):
         except DuplicateKeyError:
             return None
 
-
-    @staticmethod
-    def get_by_uid(uid):
-        """Creates a User object with data from db"""
-        u = User(uid=uid)
-        if u.login is None:
-            return None
-        return u
-
     def fetch(self):
-        """Updates a User object with data from db with login and pwd"""
-        u = mongo.db.user.find_one({
-            DB_LOGIN: self.login,
-            DB_PASSWORD: self.pwd,
-        })
+        """Updates a User model object with data from db by login and pwd or uid"""
+        u = None
+        if self.login:
+            u = mongo.db.user.find_one({
+                DB_LOGIN: self.login,
+                DB_PASSWORD: self.pwd,
+            })
+        elif self.uid:
+            u = mongo.db.user.find_one({
+                DB_UID: self.uid,
+            })
         if u is not None:
             self.login = u.get(DB_LOGIN)
             self.password = u.get(DB_PASSWORD)
@@ -61,4 +56,4 @@ class User(UserMixin):
         return self.uid
 
     def __repr__(self):
-        return '<User %d: %r' % (self.uid, self.login)
+        return '<User %s: %s' % (self.uid, self.login)

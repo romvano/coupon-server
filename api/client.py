@@ -16,18 +16,12 @@ clients = list()
 @client_bp.route('register/', methods=['POST'])
 def register():
     """DEPRECATED"""
-    data = dict((k, v) for (k, v) in request.json.items())
-    login = data.get('login', None)
-    password = data.get('password', None)
-    return user.register(login, password)
+    return user.register()
 
 @client_bp.route('login/', methods=['POST'])
 def login_client():
     """DEPRECATED"""
-    data = dict((k, v) for (k, v) in request.json.items())
-    login = data.get('login', None)
-    password = data.get('password', None)
-    return user.authenticate(login, password)
+    return user.authenticate()
 
 @client_bp.route('list_hosts/', methods=['GET'])
 def get_shops():
