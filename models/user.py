@@ -18,6 +18,8 @@ class User(UserMixin):
             self.uid = uid
         elif uid:
             self.uid = uid
+            self.login = None
+            self.pwd = None
             self.fetch()
         else:
             raise ValueError("Either login & pwd or uid must be provided")

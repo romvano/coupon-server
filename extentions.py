@@ -1,3 +1,4 @@
+import datetime
 from bson.objectid import ObjectId
 from flask.json import JSONEncoder as encoder
 
@@ -9,10 +10,6 @@ lm = LoginManager()
 
 mongo = PyMongo()
 mysql = MySQL()
-
-def setup(m):
-    m.db.user.createIndex({'login': 1}, {'unique': True})
-
 
 class JSONEncoder(encoder):
     def default(self, o):

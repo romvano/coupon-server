@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+import json
+
 from flask.blueprints import Blueprint
 from flask.globals import g, session, request
 from flask.json import jsonify
 from flask_api.status import HTTP_409_CONFLICT
 from flask_login.utils import login_user, current_user, logout_user
 
+from api.common import get_request_data
 from models.user import User
 
 WRONG_CREDS = {'code': 1, 'message': 'Wrong creds'}
@@ -15,7 +18,7 @@ USER_EXISTS = {'message': 'User exists'}
 user_bp = Blueprint('user', __name__)
 
 def _get_creds(request):
-    data = dict((k, v) for (k, v) in request.json.items())
+    data = get_request_data(request)
     return data.get('login', None), data.get('password', None)
 
 @user_bp.route('login/', methods=['POST'])

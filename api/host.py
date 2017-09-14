@@ -8,6 +8,7 @@ from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 
 from api import user
+from api.common import get_request_data
 from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_INFO, EDIT_HOST, \
     UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
@@ -35,13 +36,6 @@ while barmen_counter < 10:
     barmen_counter = barmen_counter + 1
 
 shops = list()
-
-i = 1
-while i < 10:
-    shops.append(Host(uid = i, title = "shop" + str(i), description = "Best cafe" + str(i),
-        address='Pushkina', time_open='9:00', time_close='23:00', logo = 'jhdun.jpg'))
-    i = i + 1
-
 
 def get_id_and_title(user_id):
     conn = mysql.connect()
@@ -73,7 +67,8 @@ def logout():
 @host_bp.route('create/', methods=['POST'])
 @login_required
 def create_host():
-    data = dict((k, v) for (k, v) in request.json.items())
+    """Required: title"""
+    data = get_request_data(request)
     data[OWNER_UID] = current_user.uid
     data[STAFF_UIDS] = {current_user.uid,}.union(data.get(STAFF_UIDS, set()))
     uid = Host.create(data)

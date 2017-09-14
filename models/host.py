@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
+import datetime
+
 from extentions import mongo
 
 DB_UID = '_id'
 UID = 'uid'
 OWNER_UID = 'owner_uid'
 STAFF_UIDS = 'staff_uid'
-TITLE = 'title'
+TITLE ='title'
 DESCRIPTION = 'description'
 ADDRESS = 'address'
 TIME_OPEN = 'time_open'
@@ -27,8 +30,8 @@ class Host():
             self.title = title
             self.description = description
             self.address = address
-            self.time_open = time_open
-            self.time_close = time_close
+            self.time_open = Host.parse_time(time_open)
+            self.time_close = Host.parse_time(time_close)
             self.logo = logo
             self.loyality_type = loyality_type
             self.loyality_param = loyality_param
@@ -39,13 +42,36 @@ class Host():
             raise ValueError("Either owner & title or uid must be provided")
 
     @staticmethod
+    def parse_time(t):
+        """For compability with strange time format"""
+        if isinstance(t, str) or isinstance(t, unicode):
+            if t.isdecimal():
+                t = int(t)
+            else:
+                try:
+                    return datetime.datetime.strptime(t[:5], '%H:%M').time()
+                except ValueError:
+                    return datetime.time()
+        if isinstance(t, int):
+            return datetime.time(t / 24, t % 24)
+        if isinstance(t, datetime.time):
+            return t
+        return datetime.time()
+
+    @staticmethod
     def create(data):
-        if not all({data.get(OWNER_UID, None), data.get(TITLE, None) is None}):
+        print {data.get(OWNER_UID, None), data.get(TITLE, None)}
+        if not (data.get(OWNER_UID, None) and data.get(TITLE, None)):
             return None
         # remove unnecessary fields if they would come
-        for key in data:
-            if key in HOST_FIELDS:
+        for key in data.keys():
+            if key not in HOST_FIELDS:
                 data.pop(key)
+        data[STAFF_UIDS] = list(data[STAFF_UIDS])
+        if TIME_OPEN in data:
+            data[TIME_OPEN] = Host.parse_time(data[TIME_OPEN]).isoformat()[:5]
+        if TIME_CLOSE in data:
+            data[TIME_CLOSE] = Host.parse_time(data[TIME_CLOSE]).isoformat()[:5]
         return mongo.db.host.insert_one(data).inserted_id
 
     def fetch(self):
@@ -56,7 +82,7 @@ class Host():
             return None
         self.uid = h.get(DB_UID)
         self.owner_uid = h.get(OWNER_UID)
-        self.staff_uids = h.get(STAFF_UIDS)
+        self.staff_uids = set(h.get(STAFF_UIDS))
         self.title = h.get(TITLE)
         self.description = h.get(DESCRIPTION)
         self.address = h.get(ADDRESS)
