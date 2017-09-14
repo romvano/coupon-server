@@ -16,6 +16,8 @@ LOGO = 'logo'
 LOYALITY_TYPE = 'loyality_type'
 LOYALITY_PARAM = 'loyality_param'
 
+TIME_FORMAT = '%H:%M'
+
 HOST_FIELDS = {OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS,
                TIME_OPEN, TIME_CLOSE, LOGO, LOYALITY_TYPE, LOYALITY_PARAM}
 
@@ -49,7 +51,7 @@ class Host():
                 t = int(t)
             else:
                 try:
-                    return datetime.datetime.strptime(t[:5], '%H:%M').time()
+                    return datetime.datetime.strptime(t[:5], TIME_FORMAT).time()
                 except ValueError:
                     return datetime.time()
         if isinstance(t, int):
@@ -60,7 +62,6 @@ class Host():
 
     @staticmethod
     def create(data):
-        print {data.get(OWNER_UID, None), data.get(TITLE, None)}
         if not (data.get(OWNER_UID, None) and data.get(TITLE, None)):
             return None
         # remove unnecessary fields if they would come
@@ -86,8 +87,14 @@ class Host():
         self.title = h.get(TITLE)
         self.description = h.get(DESCRIPTION)
         self.address = h.get(ADDRESS)
-        self.time_open = h.get(TIME_OPEN)
-        self.time_close = h.get(TIME_CLOSE)
+        if TIME_OPEN in h:
+            self.time_open = datetime.datetime.strptime(h.get(TIME_OPEN), TIME_FORMAT).time()
+        else:
+            self.time_open = None
+        if TIME_CLOSE in h:
+            self.time_close = datetime.datetime.strptime(h.get(TIME_CLOSE), TIME_FORMAT).time()
+        else:
+            self.time_close = None
         self.logo = h.get(LOGO)
         self.loyality_type = h.get(LOYALITY_TYPE)
         self.loyality_param = h.get(LOYALITY_PARAM)
