@@ -9,8 +9,12 @@ def load_user(uid):
 
 
 def get_request_data(request):
-    if request.json is None:
-        data = json.loads(request.data)
-    else:
-        data = dict((k, v) for (k, v) in request.json.items())
-    return data
+    if request.method == 'POST':
+        if request.json is None:
+            data = json.loads(request.data)
+        else:
+            data = dict((k, v) for (k, v) in request.json.items())
+        return data
+    if request.method == 'GET':
+        data = dict((k, v) for (k, v) in request.args.items())
+        return data

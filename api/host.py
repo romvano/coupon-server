@@ -71,12 +71,9 @@ def create_host():
     data = get_request_data(request)
     data[OWNER_UID] = current_user.uid
     data[STAFF_UIDS] = {current_user.uid,}.union(data.get(STAFF_UIDS, set()))
-    uid = Host.create(data)
-    if uid is None:
-        return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
-    host = Host(uid=uid)
+    host = Host.create(data)
     if host is None:
-        return jsonify(HOST_NOT_FOUND), HTTP_404_NOT_FOUND
+        return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
     return jsonify(SUCCESS)
 
 
@@ -115,14 +112,24 @@ def get_client(identificator):
 @host_bp.route('info/', methods=['GET'])
 @login_required
 def get_info():
-    host_id = session['host_id']
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute(SELECT_INFO, [host_id])
-    host = cursor.fetchone()
-    response = {"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
-                "time_close": host[4], "profile_image": host[5]}
-    conn.close()
+    host_id = get_request_data(request).get('host_id')
+    if host_id is None:
+        return jsonify({'message': "No host id provided"}), HTTP_400_BAD_REQUEST
+    host = Host(uid=host_id)
+    # 404 if there is a host with no title in db. No unnamed hosts allowed.
+    try:
+        response = {
+            "title": host.title,
+            "description": host.description,
+            "address": host.address,
+            "time_open": host.time_open.isoformat()[:5] if host.time_open else None,
+            "time_close": host.time_close.isoformat()[:5] if host.time_close else None,
+            "profile_image": host.logo,
+            "loyality_type": host.loyality_type,
+            "loyality_param": host.loyality_param,
+        }
+    except AttributeError as e:
+        return jsonify({'message': "No such host in db"}), HTTP_404_NOT_FOUND
     return jsonify(response)
 
 

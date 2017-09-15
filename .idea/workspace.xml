@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ac281bc8-41fb-4b5e-8f70-3427b918f514" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/common.py" afterPath="$PROJECT_DIR$/api/common.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/host.py" afterPath="$PROJECT_DIR$/api/host.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/models/host.py" afterPath="$PROJECT_DIR$/models/host.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -12,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/BonusHub_backend$BonusHub_backend.coverage" NAME="BonusHub-backend Coverage Results" MODIFIED="1505400364801" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/BonusHub_backend$BonusHub_backend.coverage" NAME="BonusHub-backend Coverage Results" MODIFIED="1505491842703" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="DatabaseView">
     <option name="SHOW_INTERMEDIATE" value="true" />
@@ -26,19 +29,19 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="host.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="host.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/api/host.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="136" column="16" lean-forward="false" selection-start-line="136" selection-start-column="16" selection-end-line="136" selection-end-column="16" />
+            <state relative-caret-position="341">
+              <caret line="131" column="0" lean-forward="false" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
               <folding>
                 <element signature="e#24#33#0" expanded="true" />
-                <marker date="1505342441491" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
-                <marker date="1505342441491" expanded="true" signature="2727:2902" ph="SELECT amoun... score" />
-                <marker date="1505342441491" expanded="true" signature="5678:5714" ph="SELECT 10 FR... host" />
-                <marker date="1505342441491" expanded="true" signature="5894:6113" ph="UPDATE score... " />
-                <marker date="1505342441491" expanded="true" signature="6319:6509" ph="SELECT amoun... score" />
-                <marker date="1505342441491" expanded="true" signature="6667:6885" ph="UPDATE score... " />
+                <marker date="1505492465833" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
+                <marker date="1505492465833" expanded="true" signature="2624:2799" ph="SELECT amoun... score" />
+                <marker date="1505492465833" expanded="true" signature="6077:6113" ph="SELECT 10 FR... host" />
+                <marker date="1505492465833" expanded="true" signature="6293:6512" ph="UPDATE score... " />
+                <marker date="1505492465833" expanded="true" signature="6718:6908" ph="SELECT amoun... score" />
+                <marker date="1505492465833" expanded="true" signature="7066:7284" ph="UPDATE score... " />
               </folding>
             </state>
           </provider>
@@ -47,10 +50,53 @@
       <file leaf-file-name="common.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/api/common.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="7" column="23" lean-forward="false" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+            <state relative-caret-position="289">
+              <caret line="17" column="31" lean-forward="false" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="client.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/client.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="272">
+              <caret line="23" column="29" lean-forward="false" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="29" />
+              <folding>
+                <marker date="1505170325626" expanded="true" signature="924:976" ph="SELECT host_... score" />
+                <marker date="1505170325626" expanded="true" signature="1158:1257" ph="SELECT title... host" />
+                <marker date="1505170325626" expanded="true" signature="1691:1790" ph="SELECT title... host" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="queries.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/api/queries.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="204">
+              <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding>
+                <marker date="1505031593238" expanded="true" signature="26:206" ph="INSERT INTO transactions... " />
+                <marker date="1505031593238" expanded="true" signature="112:136" ph="SELECT clien... " />
+                <marker date="1505031593238" expanded="true" signature="243:423" ph="INSERT INTO transactions... " />
+                <marker date="1505031593238" expanded="true" signature="329:353" ph="SELECT clien... " />
+                <marker date="1505031593238" expanded="true" signature="662:779" ph="SELECT title... host" />
+                <marker date="1505031593238" expanded="true" signature="800:925" ph="UPDATE host " />
+                <marker date="1505031593238" expanded="true" signature="949:1002" ph="UPDATE host " />
+                <marker date="1505031593238" expanded="true" signature="1038:1097" ph="SELECT user_... user" />
+                <marker date="1505031593238" expanded="true" signature="1130:1171" ph="SELECT user_... user" />
+                <marker date="1505031593238" expanded="true" signature="1194:1244" ph="INSERT INTO user... " />
+                <marker date="1505031593238" expanded="true" signature="1266:1304" ph="INSERT INTO host... " />
+                <marker date="1505031593238" expanded="true" signature="1329:1398" ph="INSERT INTO client... " />
+                <marker date="1505031593238" expanded="true" signature="1424:1542" ph="UPDATE host " />
+                <marker date="1505031593238" expanded="true" signature="1571:1681" ph="SELECT * FRO... score" />
+                <marker date="1505031593238" expanded="true" signature="1712:1874" ph="INSERT INTO score... " />
+                <marker date="1505031593238" expanded="true" signature="1783:1807" ph="SELECT clien... " />
+                <marker date="1505031593238" expanded="true" signature="1902:1926" ph="SELECT host_... host" />
+                <marker date="1505031593238" expanded="true" signature="1975:2034" ph="SELECT name,... client" />
               </folding>
             </state>
           </provider>
@@ -68,11 +114,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="host.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="host.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/models/host.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="122">
-              <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+            <state relative-caret-position="-50">
+              <caret line="109" column="32" lean-forward="true" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
               <folding>
                 <element signature="e#24#39#0" expanded="true" />
               </folding>
@@ -83,7 +129,7 @@
       <file leaf-file-name="pool.py" pinned="false" current-in-tab="false">
         <entry file="file:///usr/local/lib/python2.7/dist-packages/pymongo/pool.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
+            <state relative-caret-position="10268">
               <caret line="609" column="0" lean-forward="false" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
               <folding />
             </state>
@@ -93,7 +139,7 @@
       <file leaf-file-name="extentions.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/extentions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
+            <state relative-caret-position="187">
               <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -105,22 +151,10 @@
       <file leaf-file-name="user.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/api/user.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="20" column="36" lean-forward="true" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="36" />
+            <state relative-caret-position="187">
+              <caret line="20" column="36" lean-forward="false" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="36" />
               <folding>
                 <element signature="e#24#35#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="user.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/models/user.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="680">
-              <caret line="40" column="21" lean-forward="false" selection-start-line="40" selection-start-column="21" selection-end-line="40" selection-end-column="21" />
-              <folding>
-                <element signature="e#25#65#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -193,12 +227,12 @@
         <option value="$PROJECT_DIR$/api/client.py" />
         <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/api/user.py" />
-        <option value="$PROJECT_DIR$/api/common.py" />
         <option value="$PROJECT_DIR$/models/user.py" />
         <option value="$PROJECT_DIR$/app.py" />
-        <option value="$PROJECT_DIR$/api/host.py" />
         <option value="$PROJECT_DIR$/extentions.py" />
+        <option value="$PROJECT_DIR$/api/common.py" />
         <option value="$PROJECT_DIR$/models/host.py" />
+        <option value="$PROJECT_DIR$/api/host.py" />
       </list>
     </option>
   </component>
@@ -229,6 +263,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -272,7 +307,6 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -280,7 +314,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
     <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
-    <property name="SearchEverywhereHistoryKey" value="HTTP_400&#9;null&#9;null&#10;User(&#9;null&#9;null&#10;loa&#9;null&#9;null&#10;loaylity&#9;null&#9;null" />
+    <property name="SearchEverywhereHistoryKey" value="Host&#9;null&#9;null&#10;HTTP_400&#9;null&#9;null&#10;User(&#9;null&#9;null&#10;loa&#9;null&#9;null&#10;loaylity&#9;null&#9;null" />
     <property name="restartRequiresConfirmation" value="false" />
   </component>
   <component name="RunDashboard">
@@ -496,16 +530,15 @@
     <frame x="52" y="-3" width="1316" height="775" extended-state="6" />
     <editor active="true" />
     <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2031496" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32924962" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44716692" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44716692" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32924962" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3323124" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32924962" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39969373" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -514,6 +547,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3323124" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -542,7 +576,6 @@
         <state relative-caret-position="1377">
           <caret line="81" column="52" lean-forward="false" selection-start-line="81" selection-start-column="52" selection-end-line="81" selection-end-column="52" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
             <marker date="1505170325626" expanded="true" signature="924:976" ph="SELECT host_... score" />
             <marker date="1505170325626" expanded="true" signature="1158:1257" ph="SELECT title... host" />
             <marker date="1505170325626" expanded="true" signature="1691:1790" ph="SELECT title... host" />
@@ -610,12 +643,12 @@
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#24#33#0" expanded="true" />
-            <marker date="1505342441491" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
-            <marker date="1505342441491" expanded="true" signature="2727:2902" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="5678:5714" ph="SELECT 10 FR... host" />
-            <marker date="1505342441491" expanded="true" signature="5894:6113" ph="UPDATE score... " />
-            <marker date="1505342441491" expanded="true" signature="6319:6509" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="6667:6885" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
+            <marker date="1505492465833" expanded="true" signature="2624:2799" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="6077:6113" ph="SELECT 10 FR... host" />
+            <marker date="1505492465833" expanded="true" signature="6293:6512" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="6718:6908" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="7066:7284" ph="UPDATE score... " />
           </folding>
         </state>
       </provider>
@@ -662,7 +695,6 @@
         <state relative-caret-position="1581">
           <caret line="93" column="32" lean-forward="false" selection-start-line="93" selection-start-column="32" selection-end-line="93" selection-end-column="32" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
             <marker date="1505170325626" expanded="true" signature="924:976" ph="SELECT host_... score" />
             <marker date="1505170325626" expanded="true" signature="1158:1257" ph="SELECT title... host" />
             <marker date="1505170325626" expanded="true" signature="1691:1790" ph="SELECT title... host" />
@@ -684,12 +716,12 @@
           <caret line="141" column="46" lean-forward="false" selection-start-line="141" selection-start-column="46" selection-end-line="141" selection-end-column="46" />
           <folding>
             <element signature="e#24#33#0" expanded="true" />
-            <marker date="1505342441491" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
-            <marker date="1505342441491" expanded="true" signature="2727:2902" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="5678:5714" ph="SELECT 10 FR... host" />
-            <marker date="1505342441491" expanded="true" signature="5894:6113" ph="UPDATE score... " />
-            <marker date="1505342441491" expanded="true" signature="6319:6509" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="6667:6885" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
+            <marker date="1505492465833" expanded="true" signature="2624:2799" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="6077:6113" ph="SELECT 10 FR... host" />
+            <marker date="1505492465833" expanded="true" signature="6293:6512" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="6718:6908" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="7066:7284" ph="UPDATE score... " />
           </folding>
         </state>
       </provider>
@@ -744,7 +776,6 @@
         <state relative-caret-position="1680">
           <caret line="93" column="32" lean-forward="false" selection-start-line="93" selection-start-column="32" selection-end-line="93" selection-end-column="32" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
             <marker date="1505170325626" expanded="true" signature="924:976" ph="SELECT host_... score" />
             <marker date="1505170325626" expanded="true" signature="1158:1257" ph="SELECT title... host" />
             <marker date="1505170325626" expanded="true" signature="1691:1790" ph="SELECT title... host" />
@@ -782,12 +813,12 @@
           <caret line="127" column="26" lean-forward="false" selection-start-line="127" selection-start-column="26" selection-end-line="127" selection-end-column="26" />
           <folding>
             <element signature="e#24#33#0" expanded="true" />
-            <marker date="1505342441491" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
-            <marker date="1505342441491" expanded="true" signature="2727:2902" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="5678:5714" ph="SELECT 10 FR... host" />
-            <marker date="1505342441491" expanded="true" signature="5894:6113" ph="UPDATE score... " />
-            <marker date="1505342441491" expanded="true" signature="6319:6509" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="6667:6885" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
+            <marker date="1505492465833" expanded="true" signature="2624:2799" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="6077:6113" ph="SELECT 10 FR... host" />
+            <marker date="1505492465833" expanded="true" signature="6293:6512" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="6718:6908" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="7066:7284" ph="UPDATE score... " />
           </folding>
         </state>
       </provider>
@@ -828,7 +859,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="25" lean-forward="false" selection-start-line="8" selection-start-column="25" selection-end-line="8" selection-end-column="25" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -880,7 +910,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
           <caret line="64" column="0" lean-forward="true" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -900,10 +929,105 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask_pymongo/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="111">
+          <caret line="305" column="0" lean-forward="false" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/lib/python2.7/json/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="111">
+          <caret line="292" column="4" lean-forward="false" selection-start-line="292" selection-start-column="4" selection-end-line="292" selection-end-column="4" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask_login/mixins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-119">
+          <caret line="11" column="6" lean-forward="false" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask_api/status.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="148">
+          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/user.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="629">
+          <caret line="40" column="21" lean-forward="false" selection-start-line="40" selection-start-column="21" selection-end-line="40" selection-end-column="21" />
+          <folding>
+            <element signature="e#25#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/pymongo/pool.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10268">
+          <caret line="609" column="0" lean-forward="false" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask/json.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2105">
+          <caret line="85" column="6" lean-forward="false" selection-start-line="85" selection-start-column="6" selection-end-line="85" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/extentions.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/user.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="20" column="36" lean-forward="false" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="36" />
+          <folding>
+            <element signature="e#24#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="25" lean-forward="false" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="23" lean-forward="false" selection-start-line="0" selection-start-column="23" selection-end-line="0" selection-end-column="23" />
+          <folding>
+            <element signature="e#25#48#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/api/queries.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="493">
-          <caret line="29" column="0" lean-forward="false" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+        <state relative-caret-position="204">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding>
             <marker date="1505031593238" expanded="true" signature="26:206" ph="INSERT INTO transactions... " />
             <marker date="1505031593238" expanded="true" signature="112:136" ph="SELECT clien... " />
@@ -927,28 +1051,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask_pymongo/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="305" column="0" lean-forward="false" selection-start-line="305" selection-start-column="0" selection-end-line="305" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python2.7/json/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="292" column="4" lean-forward="false" selection-start-line="292" selection-start-column="4" selection-end-line="292" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/api/client.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
+        <state relative-caret-position="272">
           <caret line="23" column="29" lean-forward="false" selection-start-line="23" selection-start-column="29" selection-end-line="23" selection-end-column="29" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
             <marker date="1505170325626" expanded="true" signature="924:976" ph="SELECT host_... score" />
             <marker date="1505170325626" expanded="true" signature="1158:1257" ph="SELECT title... host" />
             <marker date="1505170325626" expanded="true" signature="1691:1790" ph="SELECT title... host" />
@@ -956,118 +1063,38 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask_login/mixins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-119">
-          <caret line="11" column="6" lean-forward="false" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/api/common.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="7" column="23" lean-forward="false" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+        <state relative-caret-position="289">
+          <caret line="17" column="31" lean-forward="false" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask_api/status.py">
+    <entry file="file://$PROJECT_DIR$/models/host.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="148">
-          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="2" column="25" lean-forward="false" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="23" lean-forward="false" selection-start-line="0" selection-start-column="23" selection-end-line="0" selection-end-column="23" />
+        <state relative-caret-position="-50">
+          <caret line="109" column="32" lean-forward="true" selection-start-line="109" selection-start-column="32" selection-end-line="109" selection-end-column="32" />
           <folding>
-            <element signature="e#25#48#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/user.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="40" column="21" lean-forward="false" selection-start-line="40" selection-start-column="21" selection-end-line="40" selection-end-column="21" />
-          <folding>
-            <element signature="e#25#65#0" expanded="true" />
+            <element signature="e#24#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/api/host.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="136" column="16" lean-forward="false" selection-start-line="136" selection-start-column="16" selection-end-line="136" selection-end-column="16" />
+        <state relative-caret-position="341">
+          <caret line="131" column="0" lean-forward="false" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
           <folding>
             <element signature="e#24#33#0" expanded="true" />
-            <marker date="1505342441491" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
-            <marker date="1505342441491" expanded="true" signature="2727:2902" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="5678:5714" ph="SELECT 10 FR... host" />
-            <marker date="1505342441491" expanded="true" signature="5894:6113" ph="UPDATE score... " />
-            <marker date="1505342441491" expanded="true" signature="6319:6509" ph="SELECT amoun... score" />
-            <marker date="1505342441491" expanded="true" signature="6667:6885" ph="UPDATE score... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/pymongo/pool.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="609" column="0" lean-forward="false" selection-start-line="609" selection-start-column="0" selection-end-line="609" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python2.7/dist-packages/flask/json.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2105">
-          <caret line="85" column="6" lean-forward="false" selection-start-line="85" selection-start-column="6" selection-end-line="85" selection-end-column="6" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/extentions.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/api/user.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="20" column="36" lean-forward="true" selection-start-line="20" selection-start-column="36" selection-end-line="20" selection-end-column="36" />
-          <folding>
-            <element signature="e#24#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/models/host.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="122">
-          <caret line="64" column="0" lean-forward="false" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
-          <folding>
-            <element signature="e#24#39#0" expanded="true" />
+            <marker date="1505492465833" expanded="true" signature="1491:1539" ph="SELECT host_... host" />
+            <marker date="1505492465833" expanded="true" signature="2624:2799" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="6077:6113" ph="SELECT 10 FR... host" />
+            <marker date="1505492465833" expanded="true" signature="6293:6512" ph="UPDATE score... " />
+            <marker date="1505492465833" expanded="true" signature="6718:6908" ph="SELECT amoun... score" />
+            <marker date="1505492465833" expanded="true" signature="7066:7284" ph="UPDATE score... " />
           </folding>
         </state>
       </provider>
