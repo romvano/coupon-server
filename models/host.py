@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+from bson.errors import InvalidId
 from bson.objectid import ObjectId
+from pymongo.errors import DuplicateKeyError
 
 from extentions import mongo
 
@@ -40,9 +42,14 @@ class Host():
             self.loyality_type = data.get(LOYALITY_TYPE)
             self.loyality_param = data.get(LOYALITY_PARAM)
         elif uid:
-            self.uid = uid
-            self.fetch()
-            print self
+            try:
+                ObjectId(uid)
+            except InvalidId:
+                self.uid = None
+                self.title = None
+            else:
+                self.uid = uid
+                self.fetch()
         else:
             raise ValueError("Either owner & title or uid must be provided")
 
@@ -70,7 +77,7 @@ class Host():
         return host if uid else None
 
     def save(self):
-        if self.owner_uid is None and self.title is None:
+        if self.owner_uid is None or self.title is None:
             return None
         data = {} # dict to pass to db
         data[OWNER_UID] = self.owner_uid
@@ -90,23 +97,25 @@ class Host():
             data[LOYALITY_TYPE] = self.loyality_type
         if self.loyality_param:
             data[LOYALITY_PARAM] = self.loyality_param
-        # update or create new
-        if self.uid:
-            upsert = mongo.db.host.replace_one({DB_UID: self.uid}, data, upsert=True)
-            if upsert.upserted_id:
-                return upsert.upserted_id
-            if upsert.modified_count > 0:
-                return self.uid
+        # update or create new?
+        try:
+            if self.uid:
+                upsert = mongo.db.host.replace_one({DB_UID: self.uid}, data, upsert=True)
+                if upsert.upserted_id:
+                    return upsert.upserted_id
+                if upsert.modified_count > 0:
+                    return self.uid
+                return None
+            return mongo.db.host.insert_one(data).inserted_id
+        except DuplicateKeyError:
             return None
-        return mongo.db.host.insert_one(data).inserted_id
 
     def fetch(self):
         if self.uid is None:
-            return None
+            raise ValueError("self.uid is None")
         h = mongo.db.host.find_one({DB_UID: ObjectId(self.uid)})
-        print 'h=', h
         if h is None:
-            return None
+            h = {}
         self.uid = h.get(DB_UID)
         self.owner_uid = h.get(OWNER_UID)
         self.staff_uids = set(h.get(STAFF_UIDS)) if h.get(STAFF_UIDS) else None
@@ -126,8 +135,28 @@ class Host():
         self.loyality_param = h.get(LOYALITY_PARAM)
         return self
 
+    def delete(self):
+        if self.uid is None:
+            raise ValueError("self.uid is None")
+        mongo.db.host.remove({DB_UID: ObjectId(self.uid)})
+
     def get_id(self):
         return self.uid
+
+    def to_dict(self):
+        if not self.title or not self.owner_uid:
+            return None
+        response = {
+            "title": self.title,
+            "description": self.description,
+            "address": self.address,
+            "time_open": self.time_open.isoformat()[:5] if self.time_open else None,
+            "time_close": self.time_close.isoformat()[:5] if self.time_close else None,
+            "profile_image": self.logo,
+            "loyality_type": self.loyality_type,
+            "loyality_param": self.loyality_param,
+        }
+        return response
 
     def __repr__(self):
         return '<Host %s: %s by %s' % (str(self.uid), str(self.title), str(self.owner_uid))

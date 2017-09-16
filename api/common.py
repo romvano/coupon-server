@@ -11,7 +11,7 @@ def load_user(uid):
 def get_request_data(request):
     if request.method == 'POST':
         if request.json is None:
-            data = json.loads(request.data)
+            data = json.loads(request.data) if request.data else {}
         else:
             data = dict((k, v) for (k, v) in request.json.items())
         return data

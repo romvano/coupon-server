@@ -3,7 +3,8 @@ import os
 
 import MySQLdb
 from flask import Blueprint, session, jsonify, request, send_from_directory
-from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_304_NOT_MODIFIED, HTTP_409_CONFLICT, \
+    HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 from flask_login import login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
 
@@ -13,8 +14,7 @@ from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_
     UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql
-from models.host import Host, HOST_FIELDS, OWNER_UID, STAFF_UIDS
-from models.user import User
+from models.host import Host, OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE
 
 from flask import current_app
 
@@ -25,27 +25,6 @@ HOST_NOT_FOUND = {'message': 'Host not found'}
 UPLOAD_FOLDER = os.path.split(__file__)[0] + "/.." + "/static/img"
 
 host_bp = Blueprint('host_bp', __name__)
-
-barmen_counter = 1
-barmens = list()
-barmens.append(User('test_user', 'qwerty', barmen_counter))
-barmen_counter = barmen_counter + 1
-
-while barmen_counter < 10:
-    barmens.append(User('test_user' + str(barmen_counter), 'qwerty' + str(barmen_counter), barmen_counter))
-    barmen_counter = barmen_counter + 1
-
-shops = list()
-
-def get_id_and_title(user_id):
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute("SELECT host_id, title FROM host WHERE user_id = " + str(user_id))
-    result = cursor.fetchone()
-    host_id = result[0]
-    title = result[1]
-    return host_id,title
-
 
 @host_bp.route('register/', methods=['POST'])
 def register_host():
@@ -69,11 +48,13 @@ def logout():
 def create_host():
     """Required: title"""
     data = get_request_data(request)
+    if not data.get(TITLE):
+        return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
     data[OWNER_UID] = current_user.uid
     data[STAFF_UIDS] = {current_user.uid,}.union(data.get(STAFF_UIDS, set()))
     host = Host.create(data)
     if host is None:
-        return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
+        return jsonify(HOST_CREATION_FAILED), HTTP_409_CONFLICT
     return jsonify(SUCCESS)
 
 
@@ -113,54 +94,57 @@ def get_client(identificator):
 @login_required
 def get_info():
     host_id = get_request_data(request).get('host_id')
-    if host_id is None:
+    if not host_id:
         return jsonify({'message': "No host id provided"}), HTTP_400_BAD_REQUEST
     host = Host(uid=host_id)
     # 404 if there is a host with no title in db. No unnamed hosts allowed.
-    try:
-        response = {
-            "title": host.title,
-            "description": host.description,
-            "address": host.address,
-            "time_open": host.time_open.isoformat()[:5] if host.time_open else None,
-            "time_close": host.time_close.isoformat()[:5] if host.time_close else None,
-            "profile_image": host.logo,
-            "loyality_type": host.loyality_type,
-            "loyality_param": host.loyality_param,
-        }
-    except AttributeError as e:
+    response = host.to_dict()
+    if response is None:
         return jsonify({'message': "No such host in db"}), HTTP_404_NOT_FOUND
     return jsonify(response)
 
 
 @host_bp.route('edit_host/', methods=['POST'])
 @login_required
-def edit_host_info():
-    data = dict((k, v) for (k, v) in request.json.items())
-    host_id = str(session['host_id'])
-    title = data['title']
-    description = data['description']
-    address = data['address']
-    time_open = data['time_open']
-    time_close = data['time_close']
+def update_host():
+    """All fields updated at a time"""
+    data = get_request_data(request)
+    uid = data.get('host_id')
+    if not uid:
+        return jsonify({'message': "Uid is None"}), HTTP_400_BAD_REQUEST
+    if not data.get(TITLE):
+        return jsonify({'message': "Title required"}), HTTP_400_BAD_REQUEST
+    host = Host(uid=uid)
+    if host.uid is None:
+        return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
+    if current_user.uid != host.owner_uid:
+        return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
+    host.title = data[TITLE]
+    host.description = data.get(DESCRIPTION)
+    host.address = data.get(ADDRESS)
+    host.time_open = Host.parse_time(data.get(TIME_OPEN))
+    host.time_close = Host.parse_time(data.get(TIME_CLOSE))
+    result_uid = host.save()
+    if result_uid is None:
+        return jsonify({'message': "Update failed"}), HTTP_409_CONFLICT
+    return jsonify(host.to_dict())
 
-    conn = mysql.connect()
-    cursor = conn.cursor()
 
-    try:
-        cursor.execute(EDIT_HOST, [title, description, address, time_open, time_close, host_id])
-        conn.commit()
-        if (conn.affected_rows() > 0):
-            response = {'code': 0, 'message': 'Данные о заведении успешно изменены'}
-        else:
-            response = {'code': 1, 'message': 'Данные не изменились'}
-        conn.close()
+@host_bp.route('delete/', methods=['POST'])
+@login_required
+def delete_host():
+    data = get_request_data(request)
+    uid = data.get('host_id')
+    if not uid:
+        return jsonify({'message': "Uid is None"}), HTTP_400_BAD_REQUEST
+    host = Host(uid=uid)
+    if host.uid is None:
+        return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
+    if current_user.uid != host.owner_uid:
+        return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
+    host.delete()
+    return jsonify({'code': 0})
 
-    except (MySQLdb.Error, MySQLdb.Warning):
-        conn.close()
-        response = {'code': 2, 'message': 'Неизвестная ошибка'}
-
-    return jsonify(response)
 
 
 @host_bp.route('update_points/', methods=['POST'])
