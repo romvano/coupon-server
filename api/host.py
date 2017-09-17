@@ -209,17 +209,27 @@ def uploaded_file(filename):
 @host_bp.route('upload/', methods=['POST'])
 @login_required
 def upload():
-    host_id = str(session['host_id'])
+    uid = get_request_data(request).get('host_id')
+    if not uid:
+        return jsonify({'message': "Host id must be provided"}), HTTP_400_BAD_REQUEST
+    host = Host(uid=uid)
+    if host.uid is None:
+        return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
+    if current_user.uid != host.owner_uid:
+        return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
+    # name the new file based on host uid
+    current_picture_name = host.logo
+    if current_picture_name is None:
+        filename = host.uid + '_0'
+    else:
+        number = current_picture_name.split('_')[-1]
+        if not number.isdecimal():
+            filename = host.uid + '_0'
+        else:
+            number = int(number) + 1
+            filename = host.uid + '_' + str(number)
     file = request.files.get("picture")
-    filename = secure_filename(file.filename)
     file.save(UPLOAD_FOLDER + "/" + filename)
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    try:
-        cursor.execute(UPLOAD_PHOTO, [filename, host_id])
-        conn.commit()
-        response = {'code': 0, 'message': 'Картинка успешно загружена'}
-    except (MySQLdb.Error, MySQLdb.Warning):
-        response = {'code': 2, 'message': 'Неизвестная ошибка'}
-    conn.close()
-    return jsonify(response)
+    host.logo = filename
+    host.save()
+    return jsonify(SUCCESS)
