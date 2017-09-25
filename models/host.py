@@ -28,19 +28,20 @@ HOST_FIELDS = {OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS,
 
 class Host():
     def __init__(self, data=dict(), uid=None):
+        """Init Host. Logo and staff uids, loyality params should be set additionally"""
         if all({OWNER_UID in data and data[OWNER_UID],
                 TITLE in data and data[TITLE]}):
             self.uid = data.get(UID)
             self.owner_uid = data.get(OWNER_UID)
-            self.staff_uids = set(data.get(STAFF_UIDS))
+            self.staff_uids = {self.owner_uid,}
             self.title = data.get(TITLE)
             self.description = data.get(DESCRIPTION)
             self.address = data.get(ADDRESS)
             self.time_open = Host.parse_time(data.get(TIME_OPEN))
             self.time_close = Host.parse_time(data.get(TIME_CLOSE))
-            self.logo = data.get(LOGO)
-            self.loyality_type = data.get(LOYALITY_TYPE)
-            self.loyality_param = data.get(LOYALITY_PARAM)
+            self.logo = None
+            self.loyality_type = None
+            self.loyality_param = None
         elif uid:
             try:
                 ObjectId(uid)
@@ -72,6 +73,7 @@ class Host():
 
     @staticmethod
     def create(data):
+        # setting staff allowed only in update host
         host = Host(data)
         uid = host.save()
         return host if uid else None
@@ -139,6 +141,10 @@ class Host():
         if self.uid is None:
             raise ValueError("self.uid is None")
         mongo.db.host.remove({DB_UID: ObjectId(self.uid)})
+
+    def change_loyality(self, loyality_type, loyality_param):
+        # TODO
+        pass
 
     def get_id(self):
         return self.uid

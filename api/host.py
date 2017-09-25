@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import os
 
-import MySQLdb
 from flask import Blueprint, session, jsonify, request, send_from_directory
 from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_304_NOT_MODIFIED, HTTP_409_CONFLICT, \
     HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 from flask_login import login_required, login_user, logout_user, current_user
-from werkzeug.utils import secure_filename
 
 from api import user
 from api.common import get_request_data
@@ -14,9 +12,8 @@ from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_
     UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql
-from models.host import Host, OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE
-
-from flask import current_app
+from models.host import Host, OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
+    LOYALITY_PARAM
 
 SUCCESS = {'code': 0, 'message': 'OK'}
 HOST_CREATION_FAILED = {'message': 'Unabled to create host. Title required'}
@@ -51,7 +48,6 @@ def create_host():
     if not data.get(TITLE):
         return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
     data[OWNER_UID] = current_user.uid
-    data[STAFF_UIDS] = {current_user.uid,}.union(data.get(STAFF_UIDS, set()))
     host = Host.create(data)
     if host is None:
         return jsonify(HOST_CREATION_FAILED), HTTP_409_CONFLICT
@@ -129,6 +125,24 @@ def update_host():
         return jsonify({'message': "Update failed"}), HTTP_409_CONFLICT
     return jsonify(host.to_dict())
 
+@host_bp.route('edit_loyality', methods=['POST'])
+@login_required
+def update_loyality():
+    """Loyality update. Host id, type and param required"""
+    data = get_request_data(request)
+    uid = data.get('host_id')
+    if not uid:
+        return jsonify({'message': "Uid is None"}), HTTP_400_BAD_REQUEST
+    loyality_type, loyality_param = data.get(LOYALITY_TYPE), data.get(LOYALITY_PARAM)
+    if loyality_type is None or loyality_param is None:
+        return jsonify({'message': "Loyality is None"}), HTTP_400_BAD_REQUEST
+    host = Host(uid=uid)
+    if host.uid is None:
+        return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
+    if current_user.uid != host.owner_uid:
+        return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
+    host.change_loyality(loyality_type, loyality_param)
+    return jsonify(SUCCESS)
 
 @host_bp.route('delete/', methods=['POST'])
 @login_required
@@ -195,14 +209,8 @@ def update_points():
     return jsonify(response)
 
 
-@host_bp.route('testsession/', methods=['GET'])
-def test_session():
-    current_app.logger.info('grolsh')
-    return jsonify({'code': 0, 'message': 'wonderful!'})
-
-
 @host_bp.route('media/<filename>', methods=['GET'])
-def uploaded_file(filename):
+def get_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
@@ -229,6 +237,8 @@ def upload():
             number = int(number) + 1
             filename = host.uid + '_' + str(number)
     file = request.files.get("picture")
+    if not file:
+        return jsonify({'message': "No file"}), HTTP_400_BAD_REQUEST
     file.save(UPLOAD_FOLDER + "/" + filename)
     host.logo = filename
     host.save()

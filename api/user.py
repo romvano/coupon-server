@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
-
 from flask.blueprints import Blueprint
 from flask.globals import g, session, request
 from flask.json import jsonify

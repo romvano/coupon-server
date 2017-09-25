@@ -81,4 +81,5 @@ def uploaded_file(filename):
 @client_bp.route('logout/', methods=['POST'])
 @login_required
 def logout():
+    """DEPRECATED"""
     return user.logout()
