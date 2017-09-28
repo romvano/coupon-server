@@ -31,7 +31,8 @@ def authenticate():
     login_user(user, remember=True)
     g.user = current_user
     session['login'] = g.user.login
-    return jsonify(SUCCESS)
+    host_uid = user.get_host_as_owner()
+    return jsonify({'code': 0, 'user_id': user.uid, 'host_id': host_uid})
 
 @user_bp.route('register/', methods=['POST'])
 def register():

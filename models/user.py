@@ -4,6 +4,7 @@ from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError
 
 from extentions import mongo
+from models.host import OWNER_UID
 
 DB_LOGIN = 'login'
 DB_PASSWORD = 'password'
@@ -56,6 +57,13 @@ class User(UserMixin):
 
     def get_id(self):
         return self.uid
+
+    def get_hosts(self):
+        # TODO
+        pass
+
+    def get_host_as_owner(self):
+        return mongo.db.host.find_one({OWNER_UID: self.uid})
 
     def __repr__(self):
         return '<User %s: %s' % (self.uid, self.login)
