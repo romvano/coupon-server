@@ -9,11 +9,10 @@ from flask_login import login_required, login_user, logout_user, current_user
 from api import user
 from api.common import get_request_data
 from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_INFO, EDIT_HOST, \
-    UPLOAD_PHOTO, GET_USER_FROM_CREDENTAIL, CHECK_USER_FROM_LOGIN, INSERT_USER, INSERT_HOST, UPDATE_NEW_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql
 from models.host import Host, OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
-    LOYALITY_PARAM
+    LOYALITY_PARAM, LOYALITY_TYPES
 
 SUCCESS = {'code': 0, 'message': 'OK'}
 HOST_CREATION_FAILED = {'message': 'Unabled to create host. Title required'}
@@ -134,8 +133,8 @@ def update_loyality():
     if not uid:
         return jsonify({'message': "Uid is None"}), HTTP_400_BAD_REQUEST
     loyality_type, loyality_param = data.get(LOYALITY_TYPE), data.get(LOYALITY_PARAM)
-    if loyality_type is None or loyality_param is None:
-        return jsonify({'message': "Loyality is None"}), HTTP_400_BAD_REQUEST
+    if not Host.check_loyality(loyality_type, loyality_param):
+        return jsonify({'message': "Loyality is wrong"}), HTTP_400_BAD_REQUEST
     host = Host(uid=uid)
     if host.uid is None:
         return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
@@ -143,6 +142,7 @@ def update_loyality():
         return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     host.change_loyality(loyality_type, loyality_param)
     return jsonify(SUCCESS)
+
 
 @host_bp.route('delete/', methods=['POST'])
 @login_required
@@ -158,56 +158,6 @@ def delete_host():
         return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     host.delete()
     return jsonify({'code': 0})
-
-
-
-@host_bp.route('update_points/', methods=['POST'])
-@login_required
-def update_points():
-    data = dict((k, v) for (k, v) in request.json.items())
-
-    host_id = str(session['host_id'])
-    bill = data.get('bill', None)
-    is_add = data.get('is_add', None)
-    client_identificator = data.get('client_identificator', None)
-
-    conn = mysql.connect()
-    cursor = conn.cursor()
-
-    cursor.execute(CHECK_HOST_CLIENT,[host_id, client_identificator])
-    has_been = cursor.fetchone()
-    if has_been == None:
-        cursor.execute(INSERT_CLIENT_HOST, [host_id,client_identificator])
-        conn.commit()
-
-    # TO_DO: add_percent make dynamic
-    if is_add:
-        cursor.execute("SELECT 10 FROM host WHERE host_id = " + host_id)   # 10 until I create loyalityscheme
-        add_percent = float(cursor.fetchone()[0]) / 100
-        add_points = str(int(bill * add_percent))
-        cursor.execute("UPDATE score SET amount = amount + " + add_points + " WHERE host_id = " + host_id + " AND client_id = \
-                                (SELECT client_id FROM client WHERE identificator = '" + client_identificator + "')")
-        cursor.execute(INSERT_OPERATION_ADD, [host_id, add_points, 0, client_identificator])
-
-        response = {'code': 0, 'message': 'Бонусы были успешно зачислены'}
-    else:
-        cursor.execute("SELECT amount FROM score WHERE host_id = " + host_id + " AND client_id = \
-                                (SELECT client_id FROM client WHERE identificator = '" + client_identificator + "')")
-        points = int(cursor.fetchone()[0])
-        if points >= bill:
-            points = str(points - bill)
-            cursor.execute(
-                "UPDATE score SET amount = " + points + " WHERE host_id = " + host_id + " AND client_id = \
-                                            (SELECT client_id FROM client WHERE identificator = '" + client_identificator + "')")
-            cursor.execute(INSERT_OPERATION_WITHDRAW, [host_id, bill, 1, client_identificator])
-
-            response = {'code': 0, 'message': 'Бонусы были успешно списаны'}
-        else:
-            response = {'code': 0, 'message': 'Извините, но бонусов не хватает'}
-    conn.commit()
-    conn.close()
-    return jsonify(response)
-
 
 @host_bp.route('media/<filename>', methods=['GET'])
 def get_file(filename):

@@ -20,6 +20,11 @@ LOGO = 'logo'
 LOYALITY_TYPE = 'loyality_type'
 LOYALITY_PARAM = 'loyality_param'
 
+CUP_LOYALITY = 0
+PERCENT_LOYALITY = 1
+DISCOUNT_LOYALITY = 2
+LOYALITY_TYPES = {CUP_LOYALITY, PERCENT_LOYALITY, DISCOUNT_LOYALITY}
+
 TIME_FORMAT = '%H:%M'
 
 HOST_FIELDS = {OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS,
@@ -142,9 +147,32 @@ class Host():
             raise ValueError("self.uid is None")
         mongo.db.host.remove({DB_UID: ObjectId(self.uid)})
 
+    @staticmethod
+    def check_loyality(lt, lp):
+        if lt in (CUP_LOYALITY, PERCENT_LOYALITY):
+            return True if lp > 0 else False
+        if lt == DISCOUNT_LOYALITY:
+            return False if not isinstance(lp, dict) else all(i > 0 for i in (lp.keys() + lp.values()))
+        return False
+
     def change_loyality(self, loyality_type, loyality_param):
-        # TODO
-        pass
+        """Should be called after fetch"""
+        if not self.check_loyality(loyality_type, loyality_param):
+            raise ValueError("Wrong loyality")
+        self.loyality_type = loyality_type
+        self.loyality_param = loyality_param
+        self.save()
+
+    def get_discount(self, amount):
+        """Only for discount loyality type"""
+        if self.loyality_type != DISCOUNT_LOYALITY:
+            raise ValueError("Wrong loyality type")
+        thresholds = self.loyality_param.keys()
+        thresholds.sort(cmp=lambda x, y: y - x)
+        for i in thresholds:
+            if i <= amount:
+                return float(self.loyality_param[i]) / 100
+        return 0
 
     def get_id(self):
         return self.uid
