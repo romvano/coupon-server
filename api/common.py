@@ -8,10 +8,10 @@ def load_user(uid):
     return User(uid=uid)
 
 
-def get_request_data(request):
+def get_request_data(request, cls=None):
     if request.method == 'POST':
         if request.json is None:
-            data = json.loads(request.data) if request.data else {}
+            data = json.loads(request.data, cls=cls) if request.data else {}
         else:
             data = dict((k, v) for (k, v) in request.json.items())
         return data

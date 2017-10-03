@@ -10,7 +10,7 @@ from api import user
 from api.common import get_request_data
 from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_INFO, EDIT_HOST, \
     CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
-from extentions import mysql
+from extentions import mysql, LoyalityJSONDecoder
 from models.host import Host, OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM, LOYALITY_TYPES
 
@@ -124,11 +124,11 @@ def update_host():
         return jsonify({'message': "Update failed"}), HTTP_409_CONFLICT
     return jsonify(host.to_dict())
 
-@host_bp.route('edit_loyality', methods=['POST'])
+@host_bp.route('edit_loyality/', methods=['POST'])
 @login_required
 def update_loyality():
     """Loyality update. Host id, type and param required"""
-    data = get_request_data(request)
+    data = get_request_data(request, cls=LoyalityJSONDecoder)
     uid = data.get('host_id')
     if not uid:
         return jsonify({'message': "Uid is None"}), HTTP_400_BAD_REQUEST

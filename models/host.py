@@ -94,15 +94,15 @@ class Host():
             data[DESCRIPTION] = self.description
         if self.address is not None:
             data[ADDRESS] = self.address
-        if self.time_open:
+        if self.time_open is not None:
             data[TIME_OPEN] = Host.parse_time(self.time_open).isoformat()[:5] if self.time_open else None
-        if self.time_close:
+        if self.time_close is not None:
             data[TIME_CLOSE] = Host.parse_time(self.time_close).isoformat()[:5] if self.time_close else None
-        if self.logo:
+        if self.logo is not None:
             data[LOGO] = self.logo
-        if self.loyality_type:
+        if self.loyality_type is not None:
             data[LOYALITY_TYPE] = self.loyality_type
-        if self.loyality_param:
+        if self.loyality_param is not None:
             data[LOYALITY_PARAM] = self.loyality_param
         # update or create new?
         try:
@@ -161,6 +161,7 @@ class Host():
             raise ValueError("Wrong loyality")
         self.loyality_type = loyality_type
         self.loyality_param = loyality_param
+        print loyality_type, loyality_param
         self.save()
 
     def get_discount(self, amount):

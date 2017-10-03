@@ -6,12 +6,12 @@ from api.host import host_bp
 from api.client import client_bp
 from api.score import score_bp
 from api.user import user_bp
-from extentions import mongo, lm, JSONEncoder
+from extentions import mongo, lm, MongoJSONEncoder
 import config
 
 app = Flask(__name__)
 app.config.from_object(config)
-app.json_encoder = JSONEncoder
+app.json_encoder = MongoJSONEncoder
 
 app.secret_key = 'Afe454_gjklr993mkl2nFsdfGRrrggReQcBmm'
 

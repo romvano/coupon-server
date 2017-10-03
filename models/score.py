@@ -1,3 +1,5 @@
+from bson.objectid import ObjectId
+
 from extentions import mongo
 from models.host import Host, LOYALITY_TYPES
 
@@ -23,11 +25,18 @@ class Score:
             self.loyality_type = host.loyality_type
             if self.loyality_type not in LOYALITY_TYPES:
                 raise ValueError("Loyality type in db is missen")
-            self.score = score.score or 0
+            if score is None or score.get('score') is None:
+                self.score = 0
+            else:
+                self.score = score['score'].get(str(self.loyality_type), 0)
 
     def save(self):
         if self.loyality_type is None:
             raise ValueError("Loyality type not chosen")
+        try:
+            ObjectId(self.user_uid), ObjectId(self.host_uid)
+        except ValueError:
+            raise ValueError("user_uid or host_uid not provided")
         identificator = {
             DB_HOST_UID: self.host_uid,
             DB_USER_UID: self.user_uid,
@@ -35,9 +44,12 @@ class Score:
         data = {
             '$set': {
                 '.'.join([DB_SCORE, str(self.loyality_type)]): self.score,
+                # DB_SCORE: {
+                #     str(self.loyality_type): self.score,
+                # }
             }
         }
-        upsert = mongo.db.score.replace_one(identificator, data, upsert=True)
+        upsert = mongo.db.score.update_one(identificator, data, upsert=True)
         if upsert.upserted_id or upsert.modified_count > 0:
             return self
         else:
