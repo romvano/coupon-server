@@ -22,22 +22,21 @@ def _get_creds(request):
 @user_bp.route('login/', methods=['POST'])
 def authenticate():
     login, pwd = _get_creds(request)
-    if 'login' in session:
+    if 'user_id' in session:
         logout()
     user = User(login=login, pwd=pwd)
     result = user.fetch()
     if result == None:
         return jsonify(WRONG_CREDS)
     login_user(user, remember=True)
-    g.user = current_user
-    session['login'] = g.user.login
-    host_uid = user.get_host_as_owner()
+    session['user_id'] = current_user.uid
+    host_uid = user.get_hosts_as_owner()
     return jsonify({'code': 0, 'user_id': user.uid, 'host_id': host_uid})
 
 @user_bp.route('register/', methods=['POST'])
 def register():
     login, pwd = _get_creds(request)
-    if 'login' in session:
+    if 'user_id' in session:
         return jsonify(ALREADY_AUTHED)
     uid = User.create(login=login, pwd=pwd)
     if uid is None:
@@ -49,7 +48,6 @@ def register():
 
 @user_bp.route('logout/', methods=['POST'])
 def logout():
-    session.pop('client_id', None)
-    g.user = None
+    session.pop('user_id', None)
     logout_user()
     return jsonify(SUCCESS)

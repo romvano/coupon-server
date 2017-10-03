@@ -16,9 +16,9 @@ class User(UserMixin):
         if all({login, pwd}):
             self.login = login
             self.pwd = pwd
-            self.uid = uid
+            self.uid = None
         elif uid:
-            self.uid = uid
+            self.uid = ObjectId(uid)
             self.login = None
             self.pwd = None
             self.fetch()
@@ -46,7 +46,7 @@ class User(UserMixin):
             })
         elif self.uid:
             u = mongo.db.user.find_one({
-                DB_UID: ObjectId(self.uid),
+                DB_UID: self.uid,
             })
         if u is not None:
             self.login = u.get(DB_LOGIN)
@@ -62,7 +62,7 @@ class User(UserMixin):
         # TODO
         pass
 
-    def get_host_as_owner(self):
+    def get_hosts_as_owner(self):
         return mongo.db.host.find_one({OWNER_UID: self.uid})
 
     def __repr__(self):

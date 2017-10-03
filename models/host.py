@@ -32,12 +32,12 @@ HOST_FIELDS = {OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS,
 
 
 class Host():
-    def __init__(self, data=dict(), uid=None):
+    def __init__(self, data={}, uid=None):
         """Init Host. Logo and staff uids, loyality params should be set additionally"""
         if all({OWNER_UID in data and data[OWNER_UID],
                 TITLE in data and data[TITLE]}):
-            self.uid = data.get(UID)
-            self.owner_uid = data.get(OWNER_UID)
+            self.uid = None
+            self.owner_uid = ObjectId(data[OWNER_UID])
             self.staff_uids = {self.owner_uid,}
             self.title = data.get(TITLE)
             self.description = data.get(DESCRIPTION)
@@ -49,13 +49,11 @@ class Host():
             self.loyality_param = None
         elif uid:
             try:
-                ObjectId(uid)
+                self.uid = ObjectId(uid)
+                self.fetch()
             except InvalidId:
                 self.uid = None
                 self.title = None
-            else:
-                self.uid = uid
-                self.fetch()
         else:
             raise ValueError("Either owner & title or uid must be provided")
 
@@ -74,11 +72,10 @@ class Host():
             return datetime.time(t / 24, t % 24)
         if isinstance(t, datetime.time):
             return t
-        return datetime.time()
+        return None
 
     @staticmethod
     def create(data):
-        # setting staff allowed only in update host
         host = Host(data)
         uid = host.save()
         return host if uid else None
@@ -95,9 +92,9 @@ class Host():
         if self.address is not None:
             data[ADDRESS] = self.address
         if self.time_open is not None:
-            data[TIME_OPEN] = Host.parse_time(self.time_open).isoformat()[:5] if self.time_open else None
+            data[TIME_OPEN] = Host.parse_time(self.time_open).isoformat()[:5]
         if self.time_close is not None:
-            data[TIME_CLOSE] = Host.parse_time(self.time_close).isoformat()[:5] if self.time_close else None
+            data[TIME_CLOSE] = Host.parse_time(self.time_close).isoformat()[:5]
         if self.logo is not None:
             data[LOGO] = self.logo
         if self.loyality_type is not None:
@@ -113,14 +110,15 @@ class Host():
                 if upsert.modified_count > 0:
                     return self.uid
                 return None
-            return mongo.db.host.insert_one(data).inserted_id
+            self.uid = mongo.db.host.insert_one(data).inserted_id
+            return self.uid
         except DuplicateKeyError:
             return None
 
     def fetch(self):
         if self.uid is None:
             raise ValueError("self.uid is None")
-        h = mongo.db.host.find_one({DB_UID: ObjectId(self.uid)})
+        h = mongo.db.host.find_one({DB_UID: self.uid})
         if h is None:
             h = {}
         self.uid = h.get(DB_UID)
@@ -145,7 +143,7 @@ class Host():
     def delete(self):
         if self.uid is None:
             raise ValueError("self.uid is None")
-        mongo.db.host.remove({DB_UID: ObjectId(self.uid)})
+        mongo.db.host.remove({DB_UID: self.uid})
 
     @staticmethod
     def check_loyality(lt, lp):
@@ -195,6 +193,3 @@ class Host():
 
     def __repr__(self):
         return '<Host %s: %s by %s' % (str(self.uid), str(self.title), str(self.owner_uid))
-
- #    def delete():
- #        pass

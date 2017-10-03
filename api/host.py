@@ -50,7 +50,7 @@ def create_host():
     host = Host.create(data)
     if host is None:
         return jsonify(HOST_CREATION_FAILED), HTTP_409_CONFLICT
-    return jsonify(SUCCESS)
+    return jsonify({'code': 0, 'host_id': host.uid, 'message': 'OK'})
 
 
 @host_bp.route('get_client/<identificator>/', methods=['GET'])
