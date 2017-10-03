@@ -1,5 +1,4 @@
 from functools import wraps
-import json
 
 from flask.blueprints import Blueprint
 from flask.globals import request
@@ -9,7 +8,7 @@ from flask_login.utils import login_required, current_user
 
 from api.common import get_request_data
 from extentions import LoyalityJSONDecoder
-from models.host import Host, CUP_LOYALITY, PERCENT_LOYALITY, DISCOUNT_LOYALITY, LOYALITY_TYPES
+from models.host import Host, CUP_LOYALITY, PERCENT_LOYALITY, DISCOUNT_LOYALITY
 from models.score import Score
 from models.user import User
 
@@ -33,10 +32,10 @@ def check_400(f):
             return jsonify({'message': "No such host"}), HTTP_404_NOT_FOUND
         if not host.check_loyality(host.loyality_type, host.loyality_param):
             return jsonify({'code': 2, 'message': "Loyality of the host is not set"})
-        if current_user.uid not in host.staff_uids:
+        if str(current_user.uid) not in host.staff_uids:
             return jsonify({'message': "You are not a staff of this place"}), HTTP_403_FORBIDDEN
         user = User(uid=user_uid)
-        if user.uid is None:
+        if user.login is None:
             return jsonify({'message': "No such user"}), HTTP_404_NOT_FOUND
         score = Score(host.uid, user.uid)
         return f(host, user, score, score_update)
@@ -80,9 +79,9 @@ def percent(host, user, score, score_update):
         return jsonify({'code': 0, 'score': score.score, 'message': "Score increased"})
     # decreasing points
     if score_update < 0:
-        if score.score < score_update:
+        if score.score < abs(score_update):
             return jsonify({'code': 1, 'score': score.score, 'message': "Not enough bonuses"})
-        score.score -= score_update
+        score.score -= abs(score_update)
         score.save()
         return jsonify({'code': 0, 'score': score.score, 'message': "Score decreased"})
     return jsonify({'message': "Wrong value for update"}), HTTP_400_BAD_REQUEST

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from bson.objectid import ObjectId
 from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError
 
@@ -46,7 +46,7 @@ class User(UserMixin):
             })
         elif self.uid:
             u = mongo.db.user.find_one({
-                DB_UID: self.uid,
+                DB_UID: ObjectId(self.uid),
             })
         if u is not None:
             self.login = u.get(DB_LOGIN)
