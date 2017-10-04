@@ -9,8 +9,8 @@ DB_SCORE = 'score'
 
 class Score:
     def __init__(self, host_uid, user_uid):
-        self.host_uid = host_uid
-        self.user_uid = user_uid
+        self.host_uid = ObjectId(host_uid)
+        self.user_uid = ObjectId(user_uid)
         self.score = None
         self.loyality_type = None
         self.fetch()
@@ -33,10 +33,6 @@ class Score:
     def save(self):
         if self.loyality_type is None:
             raise ValueError("Loyality type not chosen")
-        try:
-            ObjectId(self.user_uid), ObjectId(self.host_uid)
-        except ValueError:
-            raise ValueError("user_uid or host_uid not provided")
         identificator = {
             DB_HOST_UID: self.host_uid,
             DB_USER_UID: self.user_uid,
@@ -44,9 +40,6 @@ class Score:
         data = {
             '$set': {
                 '.'.join([DB_SCORE, str(self.loyality_type)]): self.score,
-                # DB_SCORE: {
-                #     str(self.loyality_type): self.score,
-                # }
             }
         }
         upsert = mongo.db.score.update_one(identificator, data, upsert=True)

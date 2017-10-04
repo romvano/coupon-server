@@ -32,7 +32,7 @@ def check_400(f):
             return jsonify({'message': "No such host"}), HTTP_404_NOT_FOUND
         if not host.check_loyality(host.loyality_type, host.loyality_param):
             return jsonify({'code': 2, 'message': "Loyality of the host is not set"})
-        if str(current_user.uid) not in host.staff_uids:
+        if current_user.uid not in host.staff_uids:
             return jsonify({'message': "You are not a staff of this place"}), HTTP_403_FORBIDDEN
         user = User(uid=user_uid)
         if user.login is None:

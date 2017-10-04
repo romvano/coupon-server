@@ -127,12 +127,12 @@ class Host():
         self.title = h.get(TITLE)
         self.description = h.get(DESCRIPTION)
         self.address = h.get(ADDRESS)
-        if TIME_OPEN in h:
-            self.time_open = datetime.datetime.strptime(h.get(TIME_OPEN), TIME_FORMAT).time()
+        if h.get(TIME_OPEN):
+            self.time_open = datetime.datetime.strptime(h[TIME_OPEN], TIME_FORMAT).time()
         else:
             self.time_open = None
-        if TIME_CLOSE in h:
-            self.time_close = datetime.datetime.strptime(h.get(TIME_CLOSE), TIME_FORMAT).time()
+        if h.get(TIME_CLOSE):
+            self.time_close = datetime.datetime.strptime(h[TIME_CLOSE], TIME_FORMAT).time()
         else:
             self.time_close = None
         self.logo = h.get(LOGO)

@@ -3,14 +3,12 @@ import json
 from bson.objectid import ObjectId
 from flask.json import JSONEncoder as encoder
 
-from flask.ext.mysql import MySQL
 from flask_login.login_manager import LoginManager
 from flask_pymongo import PyMongo
 
 lm = LoginManager()
 
 mongo = PyMongo()
-mysql = MySQL()
 
 class MongoJSONEncoder(encoder):
     def default(self, o):

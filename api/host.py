@@ -10,6 +10,7 @@ from api.common import get_request_data
 from extentions import mysql, LoyalityJSONDecoder
 from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM
+from models.score import Score
 
 SUCCESS = {'code': 0, 'message': 'OK'}
 HOST_CREATION_FAILED = {'message': 'Unabled to create host. Title required'}
@@ -44,24 +45,27 @@ def create_host():
     if not data.get(TITLE):
         return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
     data[OWNER_UID] = current_user.uid
-    host = Host.create(data)
-    if host is None:
+    host = Host(data)
+    host_uid = host.save()
+    if host_uid is None:
         return jsonify({'message': "Host with this title (and owner) already exists"}), HTTP_409_CONFLICT
-    return jsonify({'code': 0, 'host_id': host.uid, 'message': 'OK'})
+    return jsonify({'code': 0, 'host_id': host_uid, 'message': 'OK'})
 
 
-@host_bp.route('get_client/<identificator>/', methods=['GET'])
-def get_client(identificator):
-    host_id = str(session['host_id'])
-    conn = mysql.connect()
-    cursor = conn.cursor()
-    cursor.execute("SELECT amount FROM score WHERE host_id = " + host_id + " AND client_id = \
-                        (SELECT client_id FROM client WHERE identificator = '" + identificator + "')")
-    points = cursor.fetchone()[0]
-    print points
-    response = {'code': 0, 'points': points}
-    conn.close()
-    return jsonify(response)
+@host_bp.route('get_client/', methods=['GET'])
+@login_required
+def get_client_score():
+    data = get_request_data(request)
+    client_id = data.get('client_id')
+    host_id = data.get('host_id')
+    if client_id is None or host_id is None:
+        return jsonify({'message': 'both client_id and host_id required'}), HTTP_400_BAD_REQUEST
+    score = Score(host_id, client_id).score
+    if score is None:
+        return jsonify({'message': "No host with this id"}), HTTP_404_NOT_FOUND
+    if current_user.uid not in Host(uid=host_id).staff_uids:
+        return jsonify({'message': "You don't work here"}), HTTP_403_FORBIDDEN
+    return jsonify({'code': 0, 'points': score})
 
 
 # @host_bp.route('statistic/', methods=['GET'])

@@ -1,11 +1,9 @@
 import os
 
-from flask import Blueprint, session, jsonify, request, redirect, url_for, send_from_directory
-from flask_login import login_required, login_user, logout_user, current_user
-from extentions import mysql
+from flask import Blueprint, session, jsonify, send_from_directory
+from flask_login import login_required
 
 from api import user
-from api.queries import SELECT_ALL_HOSTS, SELECT_NAME_IDENTIFICATOR_FROM_CLIENT
 from models.host import TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOGO, LOYALITY_TYPE
 from models.user import User
 
@@ -48,17 +46,10 @@ def get_hosts():
 @client_bp.route('get_info/', methods=['GET'])
 @login_required
 def get_info():
+    """As we don't have names in db yet, login returned as name"""
     client_id = session['user_id']
-    conn = mysql.connect()
-    cursor = conn.cursor()
-
-    cursor.execute(SELECT_NAME_IDENTIFICATOR_FROM_CLIENT, [client_id])
-    result = cursor.fetchone()
-    name = result[0]
-    identificator = result[1]
-
-    return jsonify({'code': 0, 'name': name, 'identificator': identificator})
-
+    user = User(uid=client_id)
+    return jsonify({'code': 0, 'name': user.login, 'identificator': user.uid})
 
 
 @client_bp.route('media/<filename>', methods=['GET'])
