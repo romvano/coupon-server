@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 import os
 
-from flask import Blueprint, session, jsonify, request, send_from_directory
+from flask import Blueprint, jsonify, request, send_from_directory
 from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_403_FORBIDDEN
 from flask_login import login_required, current_user
 
 from api import user
 from api.common import get_request_data
-from extentions import mysql, LoyalityJSONDecoder
+from extentions import LoyalityJSONDecoder
 from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM
 from models.score import Score

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask.blueprints import Blueprint
-from flask.globals import g, session, request
+from flask.globals import session, request
 from flask.json import jsonify
 from flask_api.status import HTTP_409_CONFLICT
 from flask_login.utils import login_user, current_user, logout_user
