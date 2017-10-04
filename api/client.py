@@ -6,6 +6,8 @@ from extentions import mysql
 
 from api import user
 from api.queries import SELECT_ALL_HOSTS, SELECT_NAME_IDENTIFICATOR_FROM_CLIENT
+from models.host import TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOGO, LOYALITY_TYPE
+from models.user import User
 
 UPLOAD_FOLDER = os.path.split(__file__)[0] + "/.." + "/static/img"
 
@@ -24,43 +26,29 @@ def login_client():
     return user.authenticate()
 
 @client_bp.route('list_hosts/', methods=['GET'])
-def get_shops():
-    client_id = session['client_id']
-    cursor = mysql.get_db().cursor()
-
-    cursor.execute(SELECT_ALL_HOSTS)
-    all_hosts = [i[0] for i in cursor.fetchall()]
-    cursor.execute("SELECT host_id, amount FROM score WHERE client_id = " + str(client_id))
-    hostPoints = cursor.fetchall()
-
-    hostsList = []
-    for i in hostPoints:
-        host_id = i[0]
-        points = i[1]
-        cursor.execute(
-            "SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(
-                host_id))
-        host = cursor.fetchone()
-        host += (points,)
-        hostsList.append({"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
-                          "time_close": host[4], "profile_image": host[5], "points": host[6]})
-        if (host_id in all_hosts):
-            all_hosts.remove(host_id)
-    for id in all_hosts:
-        cursor.execute(
-            "SELECT title, description, address, time_open, time_close, profile_image FROM host WHERE host_id = " + str(
-                id))
-        host = cursor.fetchone()
-        hostsList.append({"title": host[0], "description": host[1], "address": host[2], "time_open": host[3],
-                          "time_close": host[4], "profile_image": host[5], "points": 0})
-    cursor.close()
-    return jsonify({'code': 0, 'hosts': hostsList})
+@login_required
+def get_hosts():
+    client_id = session['user_id']
+    client = User(uid=client_id)
+    hosts = [
+        {
+            'host_id': id,
+            'title': host.get(TITLE),
+            'description': host.get(DESCRIPTION),
+            'address': host.get(ADDRESS),
+            'time_open': host.get(TIME_OPEN),
+            'time_close': host.get(TIME_CLOSE),
+            'profile_image': host.get(LOGO),
+            'points': host.get('score'),
+            'loyality_type': host.get(LOYALITY_TYPE),
+        } for id, host in client.get_hosts().items()]
+    return jsonify({'code': 0, 'hosts': hosts})
 
 
 @client_bp.route('get_info/', methods=['GET'])
 @login_required
 def get_info():
-    client_id = session['client_id']
+    client_id = session['user_id']
     conn = mysql.connect()
     cursor = conn.cursor()
 

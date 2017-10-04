@@ -4,7 +4,8 @@ from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError
 
 from extentions import mongo
-from models.host import OWNER_UID
+from models.host import OWNER_UID, LOYALITY_TYPE
+from models.score import DB_USER_UID, DB_HOST_UID, DB_SCORE
 
 DB_LOGIN = 'login'
 DB_PASSWORD = 'password'
@@ -59,11 +60,23 @@ class User(UserMixin):
         return self.uid
 
     def get_hosts(self):
-        # TODO
-        pass
+        if not isinstance(self.uid, ObjectId):
+            raise ValueError("Wrong user uid")
+        scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
+        scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
+        host_collection = mongo.db.host.find({DB_UID: {'$in': scores_collection.keys()}})
+        host_collection = {h.pop(DB_UID): h for h in host_collection}
+        # score is a dict in db, there is a value for every type of lp
+        for uid in host_collection:
+            host_collection[uid].update({
+                'score': scores_collection[uid].get(str(host_collection[uid][LOYALITY_TYPE]))
+            })
+        return host_collection
 
-    def get_hosts_as_owner(self):
-        return mongo.db.host.find_one({OWNER_UID: self.uid})
+
+    def get_host_as_owner(self):
+        """Soon will be DEPRECATED. Need to change for many hosts"""
+        return mongo.db.host.find_one({OWNER_UID: self.uid}) or {}
 
     def __repr__(self):
         return '<User %s: %s' % (self.uid, self.login)

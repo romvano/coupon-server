@@ -2,17 +2,14 @@
 import os
 
 from flask import Blueprint, session, jsonify, request, send_from_directory
-from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_304_NOT_MODIFIED, HTTP_409_CONFLICT, \
-    HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_403_FORBIDDEN
+from flask_login import login_required, current_user
 
 from api import user
 from api.common import get_request_data
-from api.queries import INSERT_OPERATION_ADD, INSERT_OPERATION_WITHDRAW, SELECT_INFO, EDIT_HOST, \
-    CHECK_HOST_CLIENT, INSERT_CLIENT_HOST
 from extentions import mysql, LoyalityJSONDecoder
-from models.host import Host, OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
-    LOYALITY_PARAM, LOYALITY_TYPES
+from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
+    LOYALITY_PARAM
 
 SUCCESS = {'code': 0, 'message': 'OK'}
 HOST_CREATION_FAILED = {'message': 'Unabled to create host. Title required'}
@@ -49,7 +46,7 @@ def create_host():
     data[OWNER_UID] = current_user.uid
     host = Host.create(data)
     if host is None:
-        return jsonify(HOST_CREATION_FAILED), HTTP_409_CONFLICT
+        return jsonify({'message': "Host with this title (and owner) already exists"}), HTTP_409_CONFLICT
     return jsonify({'code': 0, 'host_id': host.uid, 'message': 'OK'})
 
 

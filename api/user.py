@@ -6,6 +6,7 @@ from flask_api.status import HTTP_409_CONFLICT
 from flask_login.utils import login_user, current_user, logout_user
 
 from api.common import get_request_data
+from models.host import DB_UID
 from models.user import User
 
 WRONG_CREDS = {'code': 1, 'message': 'Wrong creds'}
@@ -21,6 +22,7 @@ def _get_creds(request):
 
 @user_bp.route('login/', methods=['POST'])
 def authenticate():
+    """Returns user_id, host_id if exists"""
     login, pwd = _get_creds(request)
     if 'user_id' in session:
         logout()
@@ -30,7 +32,7 @@ def authenticate():
         return jsonify(WRONG_CREDS)
     login_user(user, remember=True)
     session['user_id'] = current_user.uid
-    host_uid = user.get_hosts_as_owner()
+    host_uid = user.get_host_as_owner().get(DB_UID)
     return jsonify({'code': 0, 'user_id': user.uid, 'host_id': host_uid})
 
 @user_bp.route('register/', methods=['POST'])
