@@ -2,7 +2,7 @@
 from flask.blueprints import Blueprint
 from flask.globals import session, request
 from flask.json import jsonify
-from flask_api.status import HTTP_409_CONFLICT
+from flask_api.status import HTTP_409_CONFLICT, HTTP_400_BAD_REQUEST
 from flask_login.utils import login_user, current_user, logout_user
 
 from api.common import get_request_data
@@ -18,12 +18,14 @@ user_bp = Blueprint('user', __name__)
 
 def _get_creds(request):
     data = get_request_data(request)
-    return data.get('login', None), data.get('password', None)
+    return str(data.get('login', None)), str(data.get('password', None))
 
 @user_bp.route('login/', methods=['POST'])
 def authenticate():
     """Returns user_id, host_id if exists"""
     login, pwd = _get_creds(request)
+    if login is None or pwd is None:
+        return jsonify({'message': "login and password should be provided"}), HTTP_400_BAD_REQUEST
     if 'user_id' in session:
         logout()
     user = User(login=login, pwd=pwd)
@@ -39,6 +41,8 @@ def authenticate():
 @user_bp.route('register/', methods=['POST'])
 def register():
     login, pwd = _get_creds(request)
+    if login is None or pwd is None:
+        return jsonify({'message': "login and password should be provided"}), HTTP_400_BAD_REQUEST
     if 'user_id' in session:
         return jsonify(ALREADY_AUTHED)
     uid = User.create(login=login, pwd=pwd)
