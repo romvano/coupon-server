@@ -18,7 +18,7 @@ user_bp = Blueprint('user', __name__)
 
 def _get_creds(request):
     data = get_request_data(request)
-    return str(data.get('login', None)), str(data.get('password', None))
+    return data.get('login', None), data.get('password', None)
 
 @user_bp.route('login/', methods=['POST'])
 def authenticate():
@@ -28,7 +28,7 @@ def authenticate():
         return jsonify({'message': "login and password should be provided"}), HTTP_400_BAD_REQUEST
     if 'user_id' in session:
         logout()
-    user = User(login=login, pwd=pwd)
+    user = User(login=str(login), pwd=str(pwd))
     result = user.fetch()
     if result == None:
         return jsonify(WRONG_CREDS)
@@ -45,7 +45,7 @@ def register():
         return jsonify({'message': "login and password should be provided"}), HTTP_400_BAD_REQUEST
     if 'user_id' in session:
         return jsonify(ALREADY_AUTHED)
-    uid = User.create(login=login, pwd=pwd)
+    uid = User.create(login=str(login), pwd=str(pwd))
     if uid is None:
         return jsonify(USER_EXISTS), HTTP_409_CONFLICT
     user = User(uid=uid)
