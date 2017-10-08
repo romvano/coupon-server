@@ -1,11 +1,9 @@
 from bson.objectid import ObjectId
 
 from extentions import mongo
-from models.host import Host, LOYALITY_TYPES
+from models.host import Host
 
-DB_HOST_UID = 'host_uid'
-DB_USER_UID = 'user_uid'
-DB_SCORE = 'score'
+from models.__init__ import *
 
 class Score:
     def __init__(self, host_uid, user_uid):

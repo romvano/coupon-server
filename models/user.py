@@ -4,12 +4,7 @@ from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError
 
 from extentions import mongo
-from models.host import OWNER_UID, LOYALITY_TYPE
-from models.score import DB_USER_UID, DB_HOST_UID, DB_SCORE
-
-DB_LOGIN = 'login'
-DB_PASSWORD = 'password'
-DB_UID = '_id'
+from models.__init__ import *
 
 class User(UserMixin):
     """A User model. If no login/pwd provided it fetches from db by uid"""
@@ -18,10 +13,12 @@ class User(UserMixin):
             self.login = login
             self.pwd = pwd
             self.uid = None
+            self.workplace_uid = None
         elif uid:
             self.uid = ObjectId(uid)
             self.login = None
             self.pwd = None
+            self.workplace_uid = None
             self.fetch()
         else:
             raise ValueError("Either login & pwd or uid must be provided")
@@ -52,9 +49,18 @@ class User(UserMixin):
         if u is not None:
             self.login = u.get(DB_LOGIN)
             self.password = u.get(DB_PASSWORD)
+            self.workplace_uid = u.get(DB_WORKPLACE)
             self.uid = u.get(DB_UID)
             return self
         return None
+
+    def save(self):
+        """Updates user in db"""
+        if self.uid is None or self.login is None or self.password is None:
+            raise ValueError("User model is faked")
+        filter = {DB_UID: self.uid, DB_LOGIN: self.login, DB_PASSWORD: self.password}
+        query = {'$set': {DB_WORKPLACE: self.workplace_uid}}
+        mongo.db.user.update(filter, query)
 
     def get_id(self):
         return self.uid
@@ -73,6 +79,16 @@ class User(UserMixin):
             })
         return host_collection
 
+    @staticmethod
+    def retire(uids):
+        """Deletes workplace_uid"""
+        if ObjectId.is_valid(uids):
+            uids = [uids]
+        mongo.db.user.update({
+            DB_UID: {'$in': map(ObjectId, uids)},
+        }, {
+            '$set': {DB_WORKPLACE: None}
+        })
 
     def get_host_as_owner(self):
         """Soon will be DEPRECATED. Need to change for many hosts"""

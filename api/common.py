@@ -2,7 +2,6 @@ import json
 from extentions import lm
 from models.user import User
 
-
 @lm.user_loader
 def load_user(uid):
     return User(uid=uid)

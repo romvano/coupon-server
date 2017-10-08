@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 import datetime
 
 from bson.errors import InvalidId
@@ -7,28 +8,7 @@ from pymongo.errors import DuplicateKeyError
 
 from extentions import mongo
 
-DB_UID = '_id'
-UID = 'uid'
-OWNER_UID = 'owner_uid'
-STAFF_UIDS = 'staff_uids'
-TITLE = 'title'
-DESCRIPTION = 'description'
-ADDRESS = 'address'
-TIME_OPEN = 'time_open'
-TIME_CLOSE = 'time_close'
-LOGO = 'logo'
-LOYALITY_TYPE = 'loyality_type'
-LOYALITY_PARAM = 'loyality_param'
-
-CUP_LOYALITY = 0
-PERCENT_LOYALITY = 1
-DISCOUNT_LOYALITY = 2
-LOYALITY_TYPES = {CUP_LOYALITY, PERCENT_LOYALITY, DISCOUNT_LOYALITY}
-
-TIME_FORMAT = '%H:%M'
-
-HOST_FIELDS = {OWNER_UID, STAFF_UIDS, TITLE, DESCRIPTION, ADDRESS,
-               TIME_OPEN, TIME_CLOSE, LOGO, LOYALITY_TYPE, LOYALITY_PARAM}
+from models.__init__ import *
 
 
 class Host():
@@ -172,6 +152,29 @@ class Host():
             if i <= amount:
                 return float(self.loyality_param[i]) / 100
         return 0
+
+    def retire(self, worker_uid):
+        """if worker_uid == 'all' then it's finance crisis (retire everybody)"""
+        if worker_uid != 'all' and ObjectId(worker_uid) not in self.staff_uids \
+                or ObjectId(worker_uid) == self.owner_uid:
+            raise ValueError("worker_uid should be ObjectId and in staff_uids")
+        user_uids_to_retire = self.staff_uids.copy()
+        user_uids_to_retire.remove(self.owner_uid)
+        if worker_uid == 'all':
+            self.staff_uids = {self.owner_uid,}
+        else:
+            self.staff_uids.remove(ObjectId(worker_uid))
+        self.save()
+        return user_uids_to_retire
+
+    def get_staff(self):
+        filter = {DB_UID: {'$in': self.staff_uids}}
+        return mongo.db.find(filter,
+                             projection={DB_UID: True, DB_LOGIN: True, DB_PASSWORD: False, DB_WORKPLACE: False})
+
+    def hire(self, uid):
+        self.staff_uids.add(ObjectId(uid))
+        self.save()
 
     def get_id(self):
         return self.uid
