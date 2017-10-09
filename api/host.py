@@ -243,6 +243,8 @@ def upload():
     host = Host(uid=uid)
     if host.uid is None:
         return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
+    if current_user.uid != host.owner_uid:
+        return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     # name the new file based on host uid
     current_picture_name = host.logo
     if current_picture_name is None:
