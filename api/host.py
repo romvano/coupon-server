@@ -49,7 +49,6 @@ def create_host():
         return jsonify(HOST_CREATION_FAILED), HTTP_400_BAD_REQUEST
     data[OWNER_UID] = current_user.uid
     owner = User(uid=current_user.uid)
-    print owner.workplace_uid
     if owner.workplace_uid is not None:
         return jsonify({'message': "Please retire first"}), HTTP_403_FORBIDDEN
     host = Host(data)
@@ -164,6 +163,7 @@ def delete_host():
         return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     User.retire(host.staff_uids)
     host.delete()
+    session.pop('host_id')
     return jsonify({'code': 0})
 
 
