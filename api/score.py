@@ -1,7 +1,7 @@
 from functools import wraps
 
 from flask.blueprints import Blueprint
-from flask.globals import request
+from flask.globals import request, session
 from flask.json import jsonify
 from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 from flask_login.utils import login_required, current_user
@@ -18,9 +18,9 @@ def check_400(f):
     @wraps(f)
     def checking():
         data = get_request_data(request, cls=LoyalityJSONDecoder)
-        host_uid = data.get('host_id')
+        host_uid = session.get('host_id')
         if not host_uid:
-            return jsonify({'message': "No host_id provided"}), HTTP_400_BAD_REQUEST
+            return jsonify({'message': "You need to be a staff"}), HTTP_403_FORBIDDEN
         user_uid = data.get('user_id')
         if not user_uid:
             return jsonify({'message': "No user_id provided"}), HTTP_400_BAD_REQUEST

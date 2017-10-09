@@ -44,6 +44,7 @@ def register():
     if login is None or pwd is None:
         return jsonify({'message': "login and password should be provided"}), HTTP_400_BAD_REQUEST
     if 'user_id' in session:
+        
         return jsonify(ALREADY_AUTHED)
     uid = User.create(login=str(login), pwd=str(pwd))
     if uid is None:
