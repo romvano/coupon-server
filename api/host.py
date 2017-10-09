@@ -168,7 +168,7 @@ def delete_host():
     return jsonify({'code': 0})
 
 
-@host_bp.route('get_staff/', methods=['POST'])
+@host_bp.route('get_staff/', methods=['GET'])
 @login_required
 def get_staff():
     host_uid = session.get('host_id')
