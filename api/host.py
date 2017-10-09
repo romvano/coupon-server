@@ -51,7 +51,7 @@ def create_host():
     owner = User(uid=current_user.uid)
     print owner.workplace_uid
     if owner.workplace_uid is not None:
-        return jsonify({'message': "Please retire first"}), HTTP_409_CONFLICT
+        return jsonify({'message': "Please retire first"}), HTTP_403_FORBIDDEN
     host = Host(data)
     host_uid = host.save()
     if host_uid is None:
