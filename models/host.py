@@ -168,9 +168,9 @@ class Host():
         return user_uids_to_retire
 
     def get_staff(self):
-        filter = {DB_UID: {'$in': self.staff_uids}}
-        return mongo.db.find(filter,
-                             projection={DB_UID: True, DB_LOGIN: True, DB_PASSWORD: False, DB_WORKPLACE: False})
+        filter = {DB_UID: {'$in': list(self.staff_uids)}}
+        return list(mongo.db.user.find(filter,
+                                       projection={DB_UID: True, DB_LOGIN: True}))
 
     def hire(self, uid):
         self.staff_uids.add(ObjectId(uid))

@@ -10,6 +10,7 @@ from flask_login import login_required, current_user
 from api import user
 from api.common import get_request_data
 from extentions import LoyalityJSONDecoder
+from models import DB_UID
 from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM
 from models.score import Score
@@ -177,6 +178,7 @@ def get_staff():
     if current_user.uid != host.owner_uid:
         return jsonify({'message': "Please log in as owner"}), HTTP_403_FORBIDDEN
     workers = host.get_staff()
+    map(lambda w: w.update({"worker_id": w.pop(DB_UID)}), workers)
     return jsonify({'code': 0, 'staff': workers})
 
 
