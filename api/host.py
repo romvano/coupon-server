@@ -131,7 +131,7 @@ def update_host():
     result_uid = host.save()
     if result_uid is None:
         return jsonify({'message': "Update failed"}), HTTP_409_CONFLICT
-    return jsonify(host.to_dict())
+    return jsonify({'code': 0, 'message': "OK"})
 
 @host_bp.route('edit_loyality/', methods=['POST'])
 @login_required
