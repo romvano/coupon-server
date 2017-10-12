@@ -248,14 +248,14 @@ def upload():
     # name the new file based on host uid
     current_picture_name = host.logo
     if current_picture_name is None:
-        filename = host.uid + '_0'
+        filename = str(host.uid) + '_0'
     else:
         number = current_picture_name.split('_')[-1]
         if not number.isdecimal():
             filename = str(host.uid) + '_0'
         else:
             number = int(number) + 1
-            filename = host.uid + '_' + str(number)
+            filename = str(host.uid) + '_' + str(number)
     file = request.files.get("picture")
     if not file:
         return jsonify({'message': "No file"}), HTTP_400_BAD_REQUEST
