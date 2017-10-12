@@ -4,6 +4,7 @@ from flask import Blueprint, session, jsonify, send_from_directory
 from flask_login import login_required
 
 from api import user
+from models import LOYALITY_PARAM
 from models.host import TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOGO, LOYALITY_TYPE
 from models.user import User
 
@@ -39,6 +40,7 @@ def get_hosts():
             'profile_image': host.get(LOGO),
             'points': host.get('score'),
             'loyality_type': host.get(LOYALITY_TYPE),
+            'loyality_param': host.get(LOYALITY_PARAM) if host.get(LOYALITY_TYPE) == 0 else None,
         } for id, host in client.get_hosts().items()]
     return jsonify({'code': 0, 'hosts': hosts})
 
