@@ -139,7 +139,6 @@ class Host():
             raise ValueError("Wrong loyality")
         self.loyality_type = loyality_type
         self.loyality_param = loyality_param
-        print loyality_type, loyality_param
         self.save()
 
     def get_discount(self, amount):

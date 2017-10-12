@@ -27,7 +27,7 @@ host_bp = Blueprint('host_bp', __name__)
 @host_bp.route('register/', methods=['POST'])
 def register_host():
     """DEPRECATED"""
-    return user.authenticate()
+    return user.register()
 
 
 @host_bp.route('login/', methods=['POST'])
