@@ -66,4 +66,8 @@ def logout():
 def get_workplace():
     user_id = session.get('user_id')
     user = User(user_id)
+    if user.workplace_uid is not None:
+        session['host_id'] = user.workplace_uid
+    else:
+        session.pop('host_id', None)
     return jsonify({'code': 0, 'host_id': user.workplace_uid})
