@@ -3,7 +3,7 @@ from flask.blueprints import Blueprint
 from flask.globals import session, request
 from flask.json import jsonify
 from flask_api.status import HTTP_409_CONFLICT, HTTP_400_BAD_REQUEST
-from flask_login.utils import login_user, current_user, logout_user
+from flask_login.utils import login_user, current_user, logout_user, login_required
 
 from api.common import get_request_data
 from models.host import DB_UID
@@ -60,3 +60,10 @@ def logout():
     session.pop('host_id', None)
     logout_user()
     return jsonify(SUCCESS)
+
+@user_bp.route('get_workplace/', methods=['GET'])
+@login_required
+def get_workplace():
+    user_id = session.get('user_id')
+    user = User(user_id)
+    return jsonify({'code': 0, 'host_id': user.workplace_uid})

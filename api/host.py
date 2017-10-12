@@ -252,7 +252,7 @@ def upload():
     else:
         number = current_picture_name.split('_')[-1]
         if not number.isdecimal():
-            filename = host.uid + '_0'
+            filename = str(host.uid) + '_0'
         else:
             number = int(number) + 1
             filename = host.uid + '_' + str(number)
