@@ -25,8 +25,8 @@ class Host():
             self.time_open = Host.parse_time(data.get(TIME_OPEN))
             self.time_close = Host.parse_time(data.get(TIME_CLOSE))
             self.logo = None
-            self.loyality_type = None
-            self.loyality_param = None
+            self.loyality_type = 1
+            self.loyality_param = 10
         elif uid:
             try:
                 self.uid = ObjectId(uid)
@@ -116,7 +116,7 @@ class Host():
         else:
             self.time_close = None
         self.logo = h.get(LOGO)
-        self.loyality_type = h.get(LOYALITY_TYPE)
+        self.loyality_type = int(h.get(LOYALITY_TYPE))
         self.loyality_param = h.get(LOYALITY_PARAM)
         return self
 

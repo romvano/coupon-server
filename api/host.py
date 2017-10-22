@@ -141,7 +141,7 @@ def update_loyality():
     host_uid = session.get('host_id')
     if not host_uid:
         return jsonify({'message': "Please log in as owner"}), HTTP_403_FORBIDDEN
-    loyality_type, loyality_param = data.get(LOYALITY_TYPE), data.get(LOYALITY_PARAM)
+    loyality_type, loyality_param = int(data.get(LOYALITY_TYPE)), data.get(LOYALITY_PARAM)
     if not Host.check_loyality(loyality_type, loyality_param):
         return jsonify({'message': "Loyality is wrong"}), HTTP_400_BAD_REQUEST
     host = Host(uid=host_uid)

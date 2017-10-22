@@ -75,7 +75,7 @@ class User(UserMixin):
         # score is a dict in db, there is a value for every type of lp
         for uid in host_collection:
             host_collection[uid].update({
-                'score': scores_collection[uid].get(str(host_collection[uid][LOYALITY_TYPE]))
+                'score': scores_collection[uid].get(str(int(host_collection[uid][LOYALITY_TYPE])))
             })
         return host_collection
 
