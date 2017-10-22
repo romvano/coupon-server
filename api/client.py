@@ -4,7 +4,7 @@ from flask import Blueprint, session, jsonify, send_from_directory
 from flask_login import login_required
 
 from api import user
-from models import LOYALITY_PARAM, LATITUDE, LONGITUDE
+from models import LOYALITY_PARAM, LATITUDE, LONGITUDE, OFFER
 from models.host import TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOGO, LOYALITY_TYPE
 from models.user import User
 
@@ -34,6 +34,7 @@ def get_hosts():
             'host_id': id,
             'title': host.get(TITLE),
             'description': host.get(DESCRIPTION),
+            'offer': host.get(OFFER),
             'address': host.get(ADDRESS),
             'latitude': host.get(LATITUDE),
             'longitude': host.get(LONGITUDE),

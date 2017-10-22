@@ -20,6 +20,7 @@ class Host():
             self.staff_uids = {self.owner_uid,}
             self.title = data.get(TITLE)
             self.description = data.get(DESCRIPTION)
+            self.offer = data.get(OFFER)
             self.address = data.get(ADDRESS)
             self.latitude = data.get(LATITUDE)
             self.longitude = data.get(LONGITUDE)
@@ -37,6 +38,14 @@ class Host():
                 self.title = None
         else:
             raise ValueError("Either owner & title or uid must be provided")
+
+    def create_offer(self):
+        if self.loyality_type == CUP_LOYALITY:
+            return "Каждая " + str(self.loyality_param) + "-я покупка - в подарок!"
+        if self.loyality_type == PERCENT_LOYALITY:
+            return str(self.loyality_param) + "% от покупок возвращается бонусами!"
+        if self.loyality_type == DISCOUNT_LOYALITY:
+            return "А эта программа лояльности пока не работает =)"
 
     @staticmethod
     def parse_time(t):
@@ -70,6 +79,7 @@ class Host():
         data[TITLE] = self.title
         if self.description is not None:
             data[DESCRIPTION] = self.description
+        data[OFFER] = self.offer or self.create_offer()
         if self.address is not None:
             data[ADDRESS] = self.address
         if self.latitude is not None and self.longitude is not None:
@@ -123,6 +133,7 @@ class Host():
         self.logo = h.get(LOGO)
         self.loyality_type = int(h.get(LOYALITY_TYPE))
         self.loyality_param = h.get(LOYALITY_PARAM)
+        self.offer = h.get(OFFER) or self.create_offer()
         return self
 
     def delete(self):
@@ -144,6 +155,7 @@ class Host():
             raise ValueError("Wrong loyality")
         self.loyality_type = loyality_type
         self.loyality_param = loyality_param
+        self.offer = self.create_offer()
         self.save()
 
     def get_discount(self, amount):
@@ -189,6 +201,7 @@ class Host():
         response = {
             "title": self.title,
             "description": self.description,
+            "offer": self.offer,
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,

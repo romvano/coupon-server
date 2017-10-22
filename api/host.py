@@ -10,7 +10,7 @@ from flask_login import login_required, current_user
 from api import user
 from api.common import get_request_data
 from extentions import LoyalityJSONDecoder
-from models import DB_UID, LATITUDE, LONGITUDE
+from models import DB_UID, LATITUDE, LONGITUDE, OFFER
 from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM
 from models.score import Score
@@ -107,6 +107,7 @@ def update_host():
         return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     host.title = data[TITLE]
     host.description = data.get(DESCRIPTION)
+    host.offer = data.get(OFFER)
     host.address = data.get(ADDRESS)
     host.latitude = data.get(LATITUDE)
     host.longitude = data.get(LONGITUDE)
