@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import collections
 import datetime
 
 from bson.errors import InvalidId
@@ -22,6 +21,8 @@ class Host():
             self.title = data.get(TITLE)
             self.description = data.get(DESCRIPTION)
             self.address = data.get(ADDRESS)
+            self.latitude = data.get(LATITUDE)
+            self.longitude = data.get(LONGITUDE)
             self.time_open = Host.parse_time(data.get(TIME_OPEN))
             self.time_close = Host.parse_time(data.get(TIME_CLOSE))
             self.logo = None
@@ -71,6 +72,8 @@ class Host():
             data[DESCRIPTION] = self.description
         if self.address is not None:
             data[ADDRESS] = self.address
+        if self.latitude is not None and self.longitude is not None:
+            data[LATITUDE], data[LONGITUDE] = self.latitude, self.longitude
         if self.time_open is not None:
             data[TIME_OPEN] = Host.parse_time(self.time_open).isoformat()[:5]
         if self.time_close is not None:
@@ -107,6 +110,8 @@ class Host():
         self.title = h.get(TITLE)
         self.description = h.get(DESCRIPTION)
         self.address = h.get(ADDRESS)
+        self.latitude = h.get(LATITUDE)
+        self.longitude = h.get(LONGITUDE)
         if h.get(TIME_OPEN):
             self.time_open = datetime.datetime.strptime(h[TIME_OPEN], TIME_FORMAT).time()
         else:
@@ -185,6 +190,8 @@ class Host():
             "title": self.title,
             "description": self.description,
             "address": self.address,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
             "time_open": self.time_open.isoformat()[:5] if self.time_open else None,
             "time_close": self.time_close.isoformat()[:5] if self.time_close else None,
             "profile_image": self.logo,

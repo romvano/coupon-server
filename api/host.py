@@ -10,7 +10,7 @@ from flask_login import login_required, current_user
 from api import user
 from api.common import get_request_data
 from extentions import LoyalityJSONDecoder
-from models import DB_UID
+from models import DB_UID, LATITUDE, LONGITUDE
 from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM
 from models.score import Score
@@ -77,24 +77,6 @@ def get_client_score():
     return jsonify({'code': 0, 'points': score})
 
 
-# @host_bp.route('statistic/', methods=['GET'])
-# def get_statistic():
-#     host_id = str(session['host_id'])
-#     conn = mysql.connect()
-#     cursor = conn.cursor()
-#     cursor.execute(SELECT_STATISTIC, [host_id])
-#     operations = cursor.fetchall()
-#     response = []
-#     for i in operations:
-#         date = i[0]
-#         avg_bill = i[1]
-#         income = i[2]
-#         outcome = i[3]
-#         response.append({"date": date, "avg_bill": avg_bill, "income": income, "outcome": outcome})
-#     conn.close()
-#     return jsonify({"code": 0, "response": response})
-
-
 @host_bp.route('info/', methods=['GET'])
 @login_required
 def get_info():
@@ -126,6 +108,8 @@ def update_host():
     host.title = data[TITLE]
     host.description = data.get(DESCRIPTION)
     host.address = data.get(ADDRESS)
+    host.latitude = data.get(LATITUDE)
+    host.longitude = data.get(LONGITUDE)
     host.time_open = Host.parse_time(data.get(TIME_OPEN))
     host.time_close = Host.parse_time(data.get(TIME_CLOSE))
     result_uid = host.save()
