@@ -149,13 +149,13 @@ class Host():
             return False if not isinstance(lp, dict) else all(i > 0 for i in (lp.keys() + lp.values()))
         return False
 
-    def change_loyality(self, loyality_type, loyality_param):
+    def change_loyality(self, loyality_type, loyality_param, offer=None):
         """Should be called after fetch"""
         if not self.check_loyality(loyality_type, loyality_param):
             raise ValueError("Wrong loyality")
         self.loyality_type = loyality_type
         self.loyality_param = loyality_param
-        self.offer = self.create_offer()
+        self.offer = offer or self.create_offer()
         self.save()
 
     def get_discount(self, amount):

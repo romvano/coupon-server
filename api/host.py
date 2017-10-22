@@ -132,7 +132,8 @@ def update_loyality():
     host = Host(uid=host_uid)
     if current_user.uid != host.owner_uid:
         return jsonify({'message': "You are not owner of this host"}), HTTP_403_FORBIDDEN
-    host.change_loyality(loyality_type, loyality_param)
+    offer = unicode(data[OFFER]) if data.get(OFFER) else None
+    host.change_loyality(loyality_type, loyality_param, offer)
     return jsonify(SUCCESS)
 
 
