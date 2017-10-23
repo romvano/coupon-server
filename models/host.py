@@ -20,7 +20,6 @@ class Host():
             self.staff_uids = {self.owner_uid,}
             self.title = data.get(TITLE)
             self.description = data.get(DESCRIPTION)
-            self.offer = data.get(OFFER)
             self.address = data.get(ADDRESS)
             self.latitude = data.get(LATITUDE)
             self.longitude = data.get(LONGITUDE)
@@ -29,6 +28,7 @@ class Host():
             self.logo = None
             self.loyality_type = 1
             self.loyality_param = 10
+            self.offer = self.create_offer()
         elif uid:
             try:
                 self.uid = ObjectId(uid)

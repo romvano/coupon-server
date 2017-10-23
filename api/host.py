@@ -107,7 +107,6 @@ def update_host():
         return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     host.title = data[TITLE]
     host.description = data.get(DESCRIPTION)
-    host.offer = data.get(OFFER)
     host.address = data.get(ADDRESS)
     host.latitude = data.get(LATITUDE)
     host.longitude = data.get(LONGITUDE)
@@ -175,6 +174,7 @@ def hire():
     host_uid = session.get('host_id')
     if host_uid is None:
         return jsonify({'message': "You need to be an owner"}), HTTP_403_FORBIDDEN
+    host_uid = ObjectId(host_uid)
     data = get_request_data(request)
     worker_uid = data.get('worker_id')
     if worker_uid is None or not ObjectId.is_valid(worker_uid):
