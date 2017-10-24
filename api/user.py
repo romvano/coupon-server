@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from flask.blueprints import Blueprint
 from flask.globals import session, request
 from flask.json import jsonify
@@ -33,7 +34,6 @@ def authenticate():
     if result == None:
         return jsonify(WRONG_CREDS)
     login_user(user, remember=True)
-    # session['user_id'] = current_user.uid
     host_uid = user.get_host_as_owner().get(DB_UID)
     session['host_id'] = user.workplace_uid
     return jsonify({'code': 0, 'user_id': user.uid, 'host_id': host_uid})
@@ -44,7 +44,6 @@ def register():
     if login is None or pwd is None:
         return jsonify({'message': "login and password should be provided"}), HTTP_400_BAD_REQUEST
     if 'user_id' in session:
-        
         return jsonify(ALREADY_AUTHED)
     uid = User.create(login=str(login), pwd=str(pwd))
     if uid is None:
@@ -56,7 +55,6 @@ def register():
 
 @user_bp.route('logout/', methods=['POST'])
 def logout():
-    # session.pop('user_id', None)
     session.pop('host_id', None)
     logout_user()
     return jsonify(SUCCESS)

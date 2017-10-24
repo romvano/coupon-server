@@ -43,7 +43,7 @@ def get_hosts():
             'profile_image': host.get(LOGO),
             'points': host.get('score'),
             'loyality_type': int(host[LOYALITY_TYPE]),
-            'loyality_param': host.get(LOYALITY_PARAM) if host.get(LOYALITY_TYPE) == 0 else None,
+            'loyality_param': host.get(LOYALITY_PARAM) if host.get(LOYALITY_TYPE) in {CUP_LOYALITY, PERCENT_LOYALITY} else None,
         } for id, host in client.get_hosts().items()]
     return jsonify({'code': 0, 'hosts': hosts})
 
