@@ -65,17 +65,22 @@ class User(UserMixin):
     def get_id(self):
         return self.uid
 
-    def get_hosts(self):
+    def get_hosts(self, max_count=20):
         if not isinstance(self.uid, ObjectId):
             raise ValueError("Wrong user uid")
         scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
         scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
         host_collection = mongo.db.host.find({DB_UID: {'$in': scores_collection.keys()}})
         host_collection = {h.pop(DB_UID): h for h in host_collection}
+        # if there are not enough host to show them beautifully - add random hosts
+        l = len(host_collection)
+        if l < max_count:
+            addtitional_collection = mongo.db.host.find({DB_UID: {'$nin': scores_collection.keys()}}).limit(max_count-l)
+            host_collection.update({h.pop(DB_UID): h for h in addtitional_collection})
         # score is a dict in db, there is a value for every type of lp
         for uid in host_collection:
             host_collection[uid].update({
-                'score': scores_collection[uid].get(str(int(host_collection[uid][LOYALITY_TYPE])))
+                'score': scores_collection[uid].get(str(int(host_collection[uid][LOYALITY_TYPE]))) if uid in scores_collection else 0
             })
         return host_collection
 
