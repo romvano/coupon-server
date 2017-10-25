@@ -81,6 +81,8 @@ def get_client_score():
 @login_required
 def get_info():
     """If host_id provided returns that host info elif host_id in session returns your host info else 400"""
+    if not session.get('host_id'):
+        session['host_id'] = current_user.workplace_uid
     host_id = get_request_data(request).get('host_id') or session.get('host_id')
     if not host_id:
         return jsonify({'message': "No host id provided"}), HTTP_400_BAD_REQUEST

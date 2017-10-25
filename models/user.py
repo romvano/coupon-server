@@ -65,7 +65,7 @@ class User(UserMixin):
     def get_id(self):
         return self.uid
 
-    def get_hosts(self, max_count=20):
+    def get_hosts(self, max_count=10):
         if not isinstance(self.uid, ObjectId):
             raise ValueError("Wrong user uid")
         scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
