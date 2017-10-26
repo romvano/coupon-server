@@ -125,6 +125,8 @@ def update_loyality():
     """Loyality update. loyality_type and loyality_param required"""
     data = get_request_data(request, cls=LoyalityJSONDecoder)
     host_uid = session.get('host_id')
+    if host_uid is None:
+        host_uid = session['host_id'] = current_user.workplace_uid
     if not host_uid:
         return jsonify({'message': "Please log in as owner"}), HTTP_403_FORBIDDEN
     loyality_type, loyality_param = int(data.get(LOYALITY_TYPE)), data.get(LOYALITY_PARAM)
@@ -141,8 +143,6 @@ def update_loyality():
 @host_bp.route('delete/', methods=['POST'])
 @login_required
 def delete_host():
-    if not session.get('host_id'):
-        session['host_id'] = current_user.workplace_uid
     host_uid = session.get('host_id')
     if not host_uid:
         return jsonify({'message': "Please login as owner"}), HTTP_403_FORBIDDEN
