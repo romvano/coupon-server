@@ -141,6 +141,8 @@ def update_loyality():
 @host_bp.route('delete/', methods=['POST'])
 @login_required
 def delete_host():
+    if not session.get('host_id'):
+        session['host_id'] = current_user.workplace_uid
     host_uid = session.get('host_id')
     if not host_uid:
         return jsonify({'message': "Please login as owner"}), HTTP_403_FORBIDDEN
