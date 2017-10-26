@@ -41,6 +41,14 @@ def logout():
     """DEPRECATED"""
     return user.logout()
 
+def _get_current_host_id():
+    """For the cases if host_id not in session but the host is already created"""
+    host_uid = session.get('host_id')
+    if host_uid is None:
+        host_uid = session['host_id'] = current_user.workplace_uid
+    return host_uid
+
+
 @host_bp.route('create/', methods=['POST'])
 @login_required
 def create_host():
@@ -98,7 +106,7 @@ def get_info():
 @login_required
 def update_host():
     """All fields updated at a time"""
-    host_uid = session.get('host_id')
+    host_uid = _get_current_host_id()
     if not host_uid:
         return jsonify({'message': "Not logged in"}), HTTP_403_FORBIDDEN
     data = get_request_data(request)
@@ -124,9 +132,7 @@ def update_host():
 def update_loyality():
     """Loyality update. loyality_type and loyality_param required"""
     data = get_request_data(request, cls=LoyalityJSONDecoder)
-    host_uid = session.get('host_id')
-    if host_uid is None:
-        host_uid = session['host_id'] = current_user.workplace_uid
+    host_uid = _get_current_host_id()
     if not host_uid:
         return jsonify({'message': "Please log in as owner"}), HTTP_403_FORBIDDEN
     loyality_type, loyality_param = int(data.get(LOYALITY_TYPE)), data.get(LOYALITY_PARAM)
@@ -143,7 +149,7 @@ def update_loyality():
 @host_bp.route('delete/', methods=['POST'])
 @login_required
 def delete_host():
-    host_uid = session.get('host_id')
+    host_uid = _get_current_host_id()
     if not host_uid:
         return jsonify({'message': "Please login as owner"}), HTTP_403_FORBIDDEN
     host = Host(uid=host_uid)
@@ -160,7 +166,9 @@ def delete_host():
 @host_bp.route('get_staff/', methods=['GET'])
 @login_required
 def get_staff():
-    host_uid = session.get('host_id')
+    host_uid = _get_current_host_id()
+    if host_uid is None:
+        host_uid = session['host_id'] = current_user.workplace_uid
     if host_uid is None:
         return jsonify({'message': "Please log in as owner"}), HTTP_403_FORBIDDEN
     host = Host(uid=host_uid)
@@ -175,7 +183,7 @@ def get_staff():
 @login_required
 def hire():
     """worker_id required"""
-    host_uid = session.get('host_id')
+    host_uid = _get_current_host_id()
     if host_uid is None:
         return jsonify({'message': "You need to be an owner"}), HTTP_403_FORBIDDEN
     host_uid = ObjectId(host_uid)
@@ -200,7 +208,7 @@ def hire():
 @login_required
 def retire():
     """worker_id required"""
-    host_uid = session.get('host_id')
+    host_uid = _get_current_host_id()
     if host_uid is None:
         return jsonify({'message': "You need to be an owner"}), HTTP_403_FORBIDDEN
     data = get_request_data(request)
@@ -227,12 +235,12 @@ def get_file(filename):
 @host_bp.route('upload/', methods=['POST'])
 @login_required
 def upload():
-    uid = session.get('host_id')
-    if not uid:
+    host_uid = _get_current_host_id()
+    if not host_uid:
         return jsonify({'message': "Host id must be provided"}), HTTP_403_FORBIDDEN
-    host = Host(uid=uid)
+    host = Host(uid=host_uid)
     if host.uid is None:
-        return jsonify({'message': "No host with uid="+uid+" in db"}), HTTP_404_NOT_FOUND
+        return jsonify({'message': "No host with uid="+host_uid+" in db"}), HTTP_404_NOT_FOUND
     if current_user.uid != host.owner_uid:
         return jsonify({'message': "You are not this host"}), HTTP_403_FORBIDDEN
     # name the new file based on host uid
