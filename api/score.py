@@ -6,7 +6,7 @@ from flask.json import jsonify
 from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 from flask_login.utils import login_required, current_user
 
-from api.common import get_request_data
+from api.common import get_request_data, get_current_host_id
 from extentions import LoyalityJSONDecoder
 from models.host import Host, CUP_LOYALITY, PERCENT_LOYALITY, DISCOUNT_LOYALITY
 from models.score import Score
@@ -18,7 +18,7 @@ def check_400(f):
     @wraps(f)
     def checking():
         data = get_request_data(request, cls=LoyalityJSONDecoder)
-        host_uid = session.get('host_id')
+        host_uid = get_current_host_id()
         if not host_uid:
             return jsonify({'message': "You need to be a staff"}), HTTP_403_FORBIDDEN
         user_uid = data.get('user_id')
