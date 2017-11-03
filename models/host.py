@@ -116,7 +116,7 @@ class Host():
             h = {}
         self.uid = h.get(DB_UID)
         self.owner_uid = h.get(OWNER_UID)
-        self.staff_uids = set(h.get(STAFF_UIDS)) if h.get(STAFF_UIDS) else None
+        self.staff_uids = h.get(STAFF_UIDS) and set(h.get(STAFF_UIDS))
         self.title = h.get(TITLE)
         self.description = h.get(DESCRIPTION)
         self.address = h.get(ADDRESS)
@@ -131,7 +131,7 @@ class Host():
         else:
             self.time_close = None
         self.logo = h.get(LOGO)
-        self.loyality_type = int(h.get(LOYALITY_TYPE))
+        self.loyality_type = h.get(LOYALITY_TYPE) and int(h[LOYALITY_TYPE])
         self.loyality_param = h.get(LOYALITY_PARAM)
         self.offer = h.get(OFFER) or self.create_offer()
         return self
