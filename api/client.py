@@ -58,7 +58,6 @@ def get_hosts():
     offset = 0
     if data.get('offset'):
         offset = int(data['offset'])
-    print offset
     client_id = session['user_id']
     client = User(uid=client_id)
     hosts = [

@@ -84,7 +84,7 @@ class User(UserMixin):
             })
         return host_collection
 
-    def get_list(self, offset, max_count=5):
+    def get_list(self, offset, max_count=10):
         if not isinstance(self.uid, ObjectId):
             raise ValueError("Wrong user uid")
         #offset = max_count * (page - 1)
