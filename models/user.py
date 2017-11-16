@@ -84,6 +84,45 @@ class User(UserMixin):
             })
         return host_collection
 
+    def get_list(self, offset, max_count=5):
+        if not isinstance(self.uid, ObjectId):
+            raise ValueError("Wrong user uid")
+        #offset = max_count * (page - 1)
+        scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
+        scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
+        scores_len = len(scores_collection)
+        host_collection = {}
+        if (scores_len > offset):
+            host_collection = mongo.db.host.find({DB_UID: {'$in': scores_collection.keys()}}).skip(offset).limit(max_count)
+            host_collection = {h.pop(DB_UID): h for h in host_collection}
+        # if there are not enough host to show them beautifully - add random hosts
+        l = len(host_collection)
+        addtitional_offset = offset - l if offset >= l else 0
+        addtitional_limit = max_count if offset >= l else max_count - l
+        addtitional_collection = mongo.db.host.find({DB_UID: {'$nin': scores_collection.keys()}}).skip(addtitional_offset).limit(addtitional_limit)
+        host_collection.update({h.pop(DB_UID): h for h in addtitional_collection})
+        # score is a dict in db, there is a value for every type of lp
+        for uid in host_collection:
+            host_collection[uid].update({
+                'score': scores_collection[uid].get(str(int(host_collection[uid][LOYALITY_TYPE]))) if uid in scores_collection else 0
+            })
+        return host_collection
+
+    def get_list_map(self):
+        if not isinstance(self.uid, ObjectId):
+            raise ValueError("Wrong user uid")
+        scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
+        scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
+        host_collection = {}
+        addtitional_collection = mongo.db.host.find({})
+        host_collection.update({h.pop(DB_UID): h for h in addtitional_collection})
+        # score is a dict in db, there is a value for every type of lp
+        for uid in host_collection:
+            host_collection[uid].update({
+                'score': scores_collection[uid].get(str(int(host_collection[uid][LOYALITY_TYPE]))) if uid in scores_collection else 0
+            })
+        return host_collection
+
     @staticmethod
     def retire(uids):
         """Deletes workplace_uid"""

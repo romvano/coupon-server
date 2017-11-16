@@ -28,9 +28,37 @@ def login_client():
     """DEPRECATED"""
     return user.authenticate()
 
+# @client_bp.route('list_hosts/', methods=['GET'])
+# @login_required
+# def get_hosts():
+#     client_id = session['user_id']
+#     client = User(uid=client_id)
+#     hosts = [
+#         {
+#             'host_id': id,
+#             'title': host.get(TITLE),
+#             'description': host.get(DESCRIPTION),
+#             'offer': host.get(OFFER),
+#             'address': host.get(ADDRESS),
+#             'latitude': host.get(LATITUDE),
+#             'longitude': host.get(LONGITUDE),
+#             'time_open': host.get(TIME_OPEN),
+#             'time_close': host.get(TIME_CLOSE),
+#             'profile_image': host.get(LOGO),
+#             'points': host.get('score'),
+#             'loyality_type': int(host[LOYALITY_TYPE]),
+#             'loyality_param': host.get(LOYALITY_PARAM) if host.get(LOYALITY_TYPE) in {CUP_LOYALITY, PERCENT_LOYALITY} else None,
+#         } for id, host in client.get_hosts().items()]
+#     return jsonify({'code': 0, 'hosts': hosts})
+
 @client_bp.route('list_hosts/', methods=['GET'])
 @login_required
 def get_hosts():
+    data = get_request_data(request)
+    offset = 0
+    if data.get('offset'):
+        offset = int(data['offset'])
+    print offset
     client_id = session['user_id']
     client = User(uid=client_id)
     hosts = [
@@ -48,9 +76,8 @@ def get_hosts():
             'points': host.get('score'),
             'loyality_type': int(host[LOYALITY_TYPE]),
             'loyality_param': host.get(LOYALITY_PARAM) if host.get(LOYALITY_TYPE) in {CUP_LOYALITY, PERCENT_LOYALITY} else None,
-        } for id, host in client.get_hosts().items()]
+        } for id, host in client.get_list(offset).items()]
     return jsonify({'code': 0, 'hosts': hosts})
-
 
 @client_bp.route('get_host/', methods=['GET'])
 @login_required
