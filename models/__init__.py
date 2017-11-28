@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Host constants
 DB_UID = '_id'
 UID = 'uid'

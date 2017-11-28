@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 
 from flask import Blueprint, session, jsonify, send_from_directory

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from bson.objectid import ObjectId
 from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError

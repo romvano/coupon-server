@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from bson.objectid import ObjectId
 
 from extentions import mongo
