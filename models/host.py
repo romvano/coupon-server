@@ -41,9 +41,9 @@ class Host():
 
     def create_offer(self):
         if self.loyality_type == CUP_LOYALITY:
-            return "Каждая " + str(self.loyality_param) + "-я покупка - в подарок!"
+            return "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!"
         if self.loyality_type == PERCENT_LOYALITY:
-            return str(self.loyality_param) + "% от покупок возвращается бонусами!"
+            return str(round(self.loyality_param)) + "% от покупок возвращается бонусами!"
         if self.loyality_type == DISCOUNT_LOYALITY:
             return "А эта программа лояльности пока не работает =)"
 
