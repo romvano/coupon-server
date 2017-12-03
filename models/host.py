@@ -198,10 +198,11 @@ class Host():
     def to_dict(self):
         if not self.title or not self.owner_uid:
             return None
+        self.create_offer()
         response = {
             "title": self.title,
             "description": self.description,
-            "offer": self.create_offer(), #self.offer,
+            "offer": self.offer,
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,
