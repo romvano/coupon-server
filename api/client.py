@@ -60,6 +60,7 @@ def get_hosts():
     offset = 0
     if data.get('offset'):
         offset = int(data['offset'])
+    query = data.get('query')
     client_id = session['user_id']
     client = User(uid=client_id)
     hosts = [
@@ -67,6 +68,7 @@ def get_hosts():
             'host_id': id,
             'title': host.get(TITLE),
             'description': host.get(DESCRIPTION),
+            # dynamic offer
             'offer': host.get(OFFER),
             'address': host.get(ADDRESS),
             'latitude': host.get(LATITUDE),
@@ -77,7 +79,7 @@ def get_hosts():
             'points': host.get('score'),
             'loyality_type': int(host[LOYALITY_TYPE]),
             'loyality_param': host.get(LOYALITY_PARAM) if host.get(LOYALITY_TYPE) in {CUP_LOYALITY, PERCENT_LOYALITY} else None,
-        } for id, host in client.get_list(offset).items()]
+        } for id, host in client.get_list(offset, query=query).items()]
     return jsonify({'code': 0, 'hosts': hosts})
 
 @client_bp.route('get_host/', methods=['GET'])

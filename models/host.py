@@ -56,9 +56,9 @@ class Host():
         elif self.loyality_burn_param == BURN_PARTIALLY:
             burn = " Бонусы от покупки сгорают через " + parse_days(self.loyality_time_param)
         if self.loyality_type == CUP_LOYALITY:
-            return "Каждая " + str(self.loyality_param) + "-я покупка - в подарок!" + burn
+            return "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!"
         if self.loyality_type == PERCENT_LOYALITY:
-            return str(self.loyality_param) + "% от покупок возвращается бонусами!" + burn
+            return str(round(self.loyality_param)) + "% от покупок возвращается бонусами!"
         if self.loyality_type == DISCOUNT_LOYALITY:
             return "А эта программа лояльности пока не работает =)" + burn
 
@@ -231,6 +231,7 @@ class Host():
     def to_dict(self):
         if not self.title or not self.owner_uid:
             return None
+        self.create_offer()
         response = {
             "title": self.title,
             "description": self.description,

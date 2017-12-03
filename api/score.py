@@ -54,15 +54,16 @@ def cup(host, user, score, score_update):
                                                                      host.loyality_time_param, host.loyality_burn_param):
         return jsonify({'message': "Wrong loyality type"}), HTTP_403_FORBIDDEN
     # increasing points
-    if score_update == 1:
-        score.score += 1
+    if score_update >= 0:
+        print score.score
+        score.score += score_update
         score.save()
         return jsonify({'code': 0, 'score': score.score, 'free': host.loyality_param, 'message': "Plus one point"})
     # decreasing points
-    if score_update == -1:
-        if score.score < host.loyality_param:
+    if score_update < 0:
+        if score.score < abs(score_update) * host.loyality_param:
             return jsonify({'code': 1, 'score': score.score, 'free': host.loyality_param, 'message': "Not enough cups"})
-        score.score -= host.loyality_param
+        score.score -= abs(score_update) * host.loyality_param
         score.save()
         return jsonify({'code': 0, 'score': score.score, 'free': host.loyality_param, 'message': "Minus cup"})
     return jsonify({'message': "Wrong value for update"}), HTTP_400_BAD_REQUEST
