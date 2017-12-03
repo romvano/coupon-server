@@ -11,7 +11,7 @@ from flask_login import login_required, current_user
 from api import user
 from api.common import get_request_data, get_current_host_id
 from extentions import LoyalityJSONDecoder
-from models import DB_UID, LATITUDE, LONGITUDE, OFFER
+from models import DB_UID, LATITUDE, LONGITUDE, OFFER, LOYALITY_TIME_PARAM, LOYALITY_BURN_PARAM
 from models.host import Host, OWNER_UID, TITLE, DESCRIPTION, ADDRESS, TIME_OPEN, TIME_CLOSE, LOYALITY_TYPE, \
     LOYALITY_PARAM
 from models.score import Score
@@ -130,13 +130,15 @@ def update_loyality():
     if not host_uid:
         return jsonify({'message': "Please log in as owner"}), HTTP_403_FORBIDDEN
     loyality_type, loyality_param = int(data.get(LOYALITY_TYPE)), data.get(LOYALITY_PARAM)
-    if not Host.check_loyality(loyality_type, loyality_param):
+    loyality_time = data.get(LOYALITY_TIME_PARAM) and int(data[LOYALITY_TIME_PARAM])
+    loyality_burn = None if data.get(LOYALITY_BURN_PARAM) is None else int(data[LOYALITY_BURN_PARAM])
+    if not Host.check_loyality(loyality_type, loyality_param, loyality_time, loyality_burn):
         return jsonify({'message': "Loyality is wrong"}), HTTP_400_BAD_REQUEST
     host = Host(uid=host_uid)
     if current_user.uid != host.owner_uid:
         return jsonify({'message': "You are not owner of this host"}), HTTP_403_FORBIDDEN
     offer = unicode(data[OFFER]) if data.get(OFFER) else None
-    host.change_loyality(loyality_type, loyality_param, offer)
+    host.change_loyality(loyality_type, loyality_param, loyality_time, loyality_burn, offer=offer)
     return jsonify(SUCCESS)
 
 

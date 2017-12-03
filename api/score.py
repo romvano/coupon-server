@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
+import datetime
 from functools import wraps
 
 from flask.blueprints import Blueprint
-from flask.globals import request, session
+from flask.globals import request
 from flask.json import jsonify
 from flask_api.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 from flask_login.utils import login_required, current_user
@@ -32,7 +32,8 @@ def check_400(f):
         host = Host(uid=host_uid)
         if host.uid is None:
             return jsonify({'message': "No such host"}), HTTP_404_NOT_FOUND
-        if not host.check_loyality(host.loyality_type, host.loyality_param):
+        if not host.check_loyality(host.loyality_type, host.loyality_param,
+                                   host.loyality_time_param, host.loyality_burn_param):
             return jsonify({'code': 2, 'message': "Loyality of the host is not set"})
         if current_user.uid not in host.staff_uids:
             return jsonify({'message': "You are not a staff of this place"}), HTTP_403_FORBIDDEN
@@ -49,11 +50,11 @@ def check_400(f):
 @check_400
 def cup(host, user, score, score_update):
     """Update points for 'cup' loyality program"""
-    if host.loyality_type != CUP_LOYALITY or not Host.check_loyality(host.loyality_type, host.loyality_param):
+    if host.loyality_type != CUP_LOYALITY or not Host.check_loyality(host.loyality_type, host.loyality_param,
+                                                                     host.loyality_time_param, host.loyality_burn_param):
         return jsonify({'message': "Wrong loyality type"}), HTTP_403_FORBIDDEN
     # increasing points
     if score_update == 1:
-        print score.score
         score.score += 1
         score.save()
         return jsonify({'code': 0, 'score': score.score, 'free': host.loyality_param, 'message': "Plus one point"})
@@ -72,11 +73,13 @@ def cup(host, user, score, score_update):
 @check_400
 def percent(host, user, score, score_update):
     """Update points for 'percent' loyality program"""
-    if host.loyality_type != PERCENT_LOYALITY or not Host.check_loyality(host.loyality_type, host.loyality_param):
+    if host.loyality_type != PERCENT_LOYALITY or not Host.check_loyality(host.loyality_type, host.loyality_param,
+                                                                         host.loyality_time_param, host.loyality_burn_param):
         return jsonify({'message': "Wrong loyality type"}), HTTP_403_FORBIDDEN
     # increasing points
     if score_update >= 0:
         score.score += float(score_update * host.loyality_param) / 100
+        # TODO обновить историю
         score.save()
         return jsonify({'code': 0, 'score': score.score, 'message': "Score increased"})
     # decreasing points
@@ -84,6 +87,7 @@ def percent(host, user, score, score_update):
         if score.score < abs(score_update):
             return jsonify({'code': 1, 'score': score.score, 'message': "Not enough bonuses"})
         score.score -= abs(score_update)
+        # TODO обновить историю
         score.save()
         return jsonify({'code': 0, 'score': score.score, 'message': "Score decreased"})
     return jsonify({'message': "Wrong value for update"}), HTTP_400_BAD_REQUEST
@@ -93,7 +97,8 @@ def percent(host, user, score, score_update):
 @check_400
 def discount(host, user, score, score_update):
     """Update points for 'discount' loyality program"""
-    if host.loyality_type != DISCOUNT_LOYALITY or not Host.check_loyality(host.loyality_type, host.loyality_param):
+    if host.loyality_type != DISCOUNT_LOYALITY or not Host.check_loyality(host.loyality_type, host.loyality_param,
+                                                                          host.loyality_time_param, host.loyality_burn_param):
         return jsonify({'message': "Wrong loyality type"}), HTTP_403_FORBIDDEN
     # increasing points
     if score_update <= 0:

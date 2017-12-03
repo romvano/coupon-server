@@ -16,11 +16,19 @@ TIME_CLOSE = 'time_close'
 LOGO = 'logo'
 LOYALITY_TYPE = 'loyality_type'
 LOYALITY_PARAM = 'loyality_param'
+LOYALITY_TIME_PARAM = 'time_param'
+LOYALITY_BURN_PARAM = 'burn_param'
 
+# loyality types
 CUP_LOYALITY = 0
 PERCENT_LOYALITY = 1
 DISCOUNT_LOYALITY = 2
 LOYALITY_TYPES = {CUP_LOYALITY, PERCENT_LOYALITY, DISCOUNT_LOYALITY}
+
+# loyality burn types
+BURN_ALL = 0
+BURN_PARTIALLY = 1
+LOYALITY_BURNS = {None, BURN_ALL, BURN_PARTIALLY}
 
 TIME_FORMAT = '%H:%M'
 
@@ -36,3 +44,4 @@ DB_WORKPLACE = 'workplace'
 DB_HOST_UID = 'host_uid'
 DB_USER_UID = 'user_uid'
 DB_SCORE = 'score'
+DB_HISTORY = 'history'
