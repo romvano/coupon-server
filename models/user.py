@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import re
 from bson.objectid import ObjectId
 from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError
@@ -85,23 +86,28 @@ class User(UserMixin):
             })
         return host_collection
 
-    def get_list(self, offset, max_count=10):
+    def get_list(self, offset, max_count=10, query=None):
         if not isinstance(self.uid, ObjectId):
             raise ValueError("Wrong user uid")
-        #offset = max_count * (page - 1)
-        scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
-        scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
-        scores_len = len(scores_collection)
-        host_collection = {}
-        if (scores_len > offset):
-            host_collection = mongo.db.host.find({DB_UID: {'$in': scores_collection.keys()}}).skip(offset).limit(max_count)
+        if query is not None:
+            host_collection = mongo.db.host.find({'$or': [{'title': re.compile('.*'+str(query)+'.*')},
+                                        {'description': '.*'+str(query)+'.*'},
+                                        {'address': '.*'+str(query)+'.*'}]}).skip(offset).limit(max_count)
             host_collection = {h.pop(DB_UID): h for h in host_collection}
-        # if there are not enough host to show them beautifully - add random hosts
-        l = len(host_collection)
-        addtitional_offset = offset - l if offset >= l else 0
-        addtitional_limit = max_count if offset >= l else max_count - l
-        addtitional_collection = mongo.db.host.find({DB_UID: {'$nin': scores_collection.keys()}}).skip(addtitional_offset).limit(addtitional_limit)
-        host_collection.update({h.pop(DB_UID): h for h in addtitional_collection})
+        else:
+            scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
+            scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
+            scores_len = len(scores_collection)
+            host_collection = {}
+            if (scores_len > offset):
+                host_collection = mongo.db.host.find({DB_UID: {'$in': scores_collection.keys()}}).skip(offset).limit(max_count)
+                host_collection = {h.pop(DB_UID): h for h in host_collection}
+            # if there are not enough host to show them beautifully - add random hosts
+            l = len(host_collection)
+            addtitional_offset = offset - l if offset >= l else 0
+            addtitional_limit = max_count if offset >= l else max_count - l
+            addtitional_collection = mongo.db.host.find({DB_UID: {'$nin': scores_collection.keys()}}).skip(addtitional_offset).limit(addtitional_limit)
+            host_collection.update({h.pop(DB_UID): h for h in addtitional_collection})
         # score is a dict in db, there is a value for every type of lp
         for uid in host_collection:
             host_collection[uid].update({
