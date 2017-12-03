@@ -68,7 +68,8 @@ def get_hosts():
             'host_id': id,
             'title': host.get(TITLE),
             'description': host.get(DESCRIPTION),
-            'offer': host.get(OFFER),
+            # dynamic offer
+            'offer': host.create_offer() or host.get(OFFER),
             'address': host.get(ADDRESS),
             'latitude': host.get(LATITUDE),
             'longitude': host.get(LONGITUDE),
