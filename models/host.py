@@ -201,7 +201,7 @@ class Host():
         response = {
             "title": self.title,
             "description": self.description,
-            "offer": self.create_offer() #self.offer,
+            "offer": self.create_offer(), #self.offer,
             "address": self.address,
             "latitude": self.latitude,
             "longitude": self.longitude,
