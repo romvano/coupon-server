@@ -180,7 +180,7 @@ class Host():
 
         return check_type_and_param(lt, lp) and check_burn(ltp, lbp)
 
-    def change_loyality(self, loyality_type, loyality_param, loyality_time=30, loyality_burn=None, offer=None):
+    def change_loyality(self, loyality_type, loyality_param, loyality_time=30, loyality_burn=NO_BURN, offer=None):
         """Should be called after fetch"""
         if not self.check_loyality(loyality_type, loyality_param, loyality_time, loyality_burn):
             raise ValueError("Wrong loyality")
