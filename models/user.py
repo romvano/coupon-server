@@ -96,9 +96,7 @@ class User(UserMixin):
         scores_len = len(scores_collection)
         host_collection = {}
         if query is not None:
-            host_collection = mongo.db.host.find(
-                {'$text': {'$search': unicode(query)}}).sort(
-                [({DB_UID: {'$in': scores_collection.keys()}}, -1)]).skip(offset).limit(max_count)
+            host_collection = mongo.db.host.find({'$text': {'$search': unicode(query)}}).skip(offset).limit(max_count)
             host_collection = {h.pop(DB_UID): h for h in host_collection}
         else:
             if (scores_len > offset):
