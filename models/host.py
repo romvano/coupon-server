@@ -45,7 +45,7 @@ class Host():
         def parse_days(n):
             if n % 10 == 1 and n != 11:
                 return str(n) + " день"
-            if n % 10 in (2, 3) and n not in (12, 13):
+            if n % 10 in (2, 3, 4) and n not in (12, 13):
                 return str(n) + " дня"
             return str(n) + " дней"
 
@@ -55,9 +55,9 @@ class Host():
         elif self.loyality_burn_param == BURN_PARTIALLY:
             burn = " Бонусы от покупки сгорают через " + parse_days(self.loyality_time_param)
         if self.loyality_type == CUP_LOYALITY:
-            self.offer = "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!" + burn
+            self.offer = "Каждая " + str(int(self.loyality_param)) + "-я покупка - в подарок!" + burn
         elif self.loyality_type == PERCENT_LOYALITY:
-            self.offer = str(round(self.loyality_param)) + "% от покупок возвращается бонусами!" + burn
+            self.offer = str(int(self.loyality_param)) + "% от покупок возвращается бонусами!" + burn
         elif self.loyality_type == DISCOUNT_LOYALITY:
             self.offer = "А эта программа лояльности пока не работает =)" + burn
         return self.offer
