@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import re
+
+from __builtin__ import unicode
 from bson.objectid import ObjectId
 from flask_login.mixins import UserMixin
 from pymongo.errors import DuplicateKeyError
@@ -89,16 +91,16 @@ class User(UserMixin):
     def get_list(self, offset, max_count=10, query=None):
         if not isinstance(self.uid, ObjectId):
             raise ValueError("Wrong user uid")
+        scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
+        scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
+        scores_len = len(scores_collection)
+        host_collection = {}
         if query is not None:
-            host_collection = mongo.db.host.find({'$or': [{'title': re.compile('.*'+str(query)+'.*')},
-                                        {'description': '.*'+str(query)+'.*'},
-                                        {'address': '.*'+str(query)+'.*'}]}).skip(offset).limit(max_count)
+            host_collection = mongo.db.host.find(
+                {'$text': {'$search': unicode(query)}}).sort(
+                {DB_UID: {'$in': scores_collection.keys()}}).skip(offset).limit(max_count)
             host_collection = {h.pop(DB_UID): h for h in host_collection}
         else:
-            scores_collection = mongo.db.score.find({DB_USER_UID: self.uid}, projection={DB_UID: False, DB_USER_UID: False})
-            scores_collection = {s[DB_HOST_UID]: s[DB_SCORE] for s in scores_collection}
-            scores_len = len(scores_collection)
-            host_collection = {}
             if (scores_len > offset):
                 host_collection = mongo.db.host.find({DB_UID: {'$in': scores_collection.keys()}}).skip(offset).limit(max_count)
                 host_collection = {h.pop(DB_UID): h for h in host_collection}
