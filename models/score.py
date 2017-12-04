@@ -52,6 +52,7 @@ class Score:
         if self.host_uid is None:
             raise ValueError("host_uid is None")
         host = Host(self.host_uid)
-        if host is None or not Host.check_loyality(host.loyality_type, host.loyality_param):
+        if host is None or not Host.check_loyality(host.loyality_type, host.loyality_param,
+                                                   host.loyality_time_param, host.loyality_burn_param):
             return None
         return host.get_discount(self.score)
