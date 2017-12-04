@@ -26,8 +26,10 @@ class Host():
             self.time_open = Host.parse_time(data.get(TIME_OPEN))
             self.time_close = Host.parse_time(data.get(TIME_CLOSE))
             self.logo = None
-            self.loyality_type = 1
+            self.loyality_type = PERCENT_LOYALITY
             self.loyality_param = 10
+            self.loyality_burn_param = NO_BURN # 0 - all bonuses, 1 - partially, None - no burn
+            self.loyality_time_param = 30 # number of days until bonus burns
             self.offer = self.create_offer()
         elif uid:
             try:
@@ -40,12 +42,24 @@ class Host():
             raise ValueError("Either owner & title or uid must be provided")
 
     def create_offer(self):
+        def parse_days(n):
+            if n % 10 == 1 and n != 11:
+                return str(n) + " день"
+            if n % 10 in (2, 3) and n not in (12, 13):
+                return str(n) + " дня"
+            return str(n) + " дней"
+
+        burn = ""
+        if self.loyality_burn_param == BURN_ALL:
+            burn = " Ваш счет обнулится через " + parse_days(self.loyality_time_param) + " после последней покупки"
+        elif self.loyality_burn_param == BURN_PARTIALLY:
+            burn = " Бонусы от покупки сгорают через " + parse_days(self.loyality_time_param)
         if self.loyality_type == CUP_LOYALITY:
-            return "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!"
+            return "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!" + burn
         if self.loyality_type == PERCENT_LOYALITY:
-            return str(round(self.loyality_param)) + "% от покупок возвращается бонусами!"
+            return str(round(self.loyality_param)) + "% от покупок возвращается бонусами!" + burn
         if self.loyality_type == DISCOUNT_LOYALITY:
-            return "А эта программа лояльности пока не работает =)"
+            return "А эта программа лояльности пока не работает =)" + burn
 
     @staticmethod
     def parse_time(t):
@@ -94,6 +108,8 @@ class Host():
             data[LOYALITY_TYPE] = self.loyality_type
         if self.loyality_param is not None:
             data[LOYALITY_PARAM] = self.loyality_param
+        data[LOYALITY_TIME_PARAM] = self.loyality_time_param or None
+        data[LOYALITY_BURN_PARAM] = self.loyality_burn_param or None
         # update or create new?
         try:
             if self.uid:
@@ -133,7 +149,14 @@ class Host():
         self.logo = h.get(LOGO)
         self.loyality_type = h.get(LOYALITY_TYPE) and int(h[LOYALITY_TYPE])
         self.loyality_param = h.get(LOYALITY_PARAM)
+        self.loyality_time_param = h.get(LOYALITY_TIME_PARAM) and int(h[LOYALITY_TIME_PARAM])
+        self.loyality_burn_param = h.get(LOYALITY_BURN_PARAM) and int(h[LOYALITY_BURN_PARAM])
         self.offer = h.get(OFFER) or self.create_offer()
+        # compability
+        print 'ltp: ', str(self.loyality_time_param)
+        if self.loyality_time_param is None:
+            self.loyality_time_param = 30
+            self.save()
         return self
 
     def delete(self):
@@ -142,19 +165,28 @@ class Host():
         mongo.db.host.remove({DB_UID: self.uid})
 
     @staticmethod
-    def check_loyality(lt, lp):
-        if lt in (CUP_LOYALITY, PERCENT_LOYALITY):
-            return True if lp > 0 else False
-        if lt == DISCOUNT_LOYALITY:
-            return False if not isinstance(lp, dict) else all(i > 0 for i in (lp.keys() + lp.values()))
-        return False
+    def check_loyality(lt, lp, ltp, lbp):
+        def check_burn(ltp, lbp):
+            return lbp in LOYALITY_BURNS and ltp > 0
 
-    def change_loyality(self, loyality_type, loyality_param, offer=None):
+        def check_type_and_param(lt, lp):
+            if lt not in LOYALITY_TYPES:
+                return False
+            if lt in (CUP_LOYALITY, PERCENT_LOYALITY):
+                return lp > 0
+            if lt == DISCOUNT_LOYALITY:
+                return isinstance(lp, dict) and all(i > 0 for i in (lp.keys() + lp.values()))
+
+        return check_type_and_param(lt, lp) and check_burn(ltp, lbp)
+
+    def change_loyality(self, loyality_type, loyality_param, loyality_time=30, loyality_burn=None, offer=None):
         """Should be called after fetch"""
-        if not self.check_loyality(loyality_type, loyality_param):
+        if not self.check_loyality(loyality_type, loyality_param, loyality_time, loyality_burn):
             raise ValueError("Wrong loyality")
         self.loyality_type = loyality_type
         self.loyality_param = loyality_param
+        self.loyality_time_param = loyality_time
+        self.loyality_burn_param = loyality_burn
         self.offer = offer or self.create_offer()
         self.save()
 
@@ -211,6 +243,8 @@ class Host():
             "profile_image": self.logo,
             "loyality_type": self.loyality_type,
             "loyality_param": self.loyality_param,
+            "loyality_time_param": self.loyality_time_param,
+            "loyality_burn_param": self.loyality_burn_param,
         }
         return response
 
