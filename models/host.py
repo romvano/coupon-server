@@ -28,7 +28,7 @@ class Host():
             self.logo = None
             self.loyality_type = PERCENT_LOYALITY
             self.loyality_param = 10
-            self.loyality_burn_param = # 0 - all bonuses, 1 - partially, None - no burn
+            self.loyality_burn_param = NO_BURN # 0 - all bonuses, 1 - partially, None - no burn
             self.loyality_time_param = 30 # number of days until bonus burns
             self.offer = self.create_offer()
         elif uid:
@@ -49,16 +49,15 @@ class Host():
                 return str(n) + " дня"
             return str(n) + " дней"
 
-        if self.loyality_burn_param == None:
-            burn = ""
-        elif self.loyality_burn_param == BURN_ALL:
+        burn = ""
+        if self.loyality_burn_param == BURN_ALL:
             burn = " Ваш счет обнулится через " + parse_days(self.loyality_time_param) + " после последней покупки"
         elif self.loyality_burn_param == BURN_PARTIALLY:
             burn = " Бонусы от покупки сгорают через " + parse_days(self.loyality_time_param)
         if self.loyality_type == CUP_LOYALITY:
-            return "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!"
+            return "Каждая " + str(round(self.loyality_param)) + "-я покупка - в подарок!" + burn
         if self.loyality_type == PERCENT_LOYALITY:
-            return str(round(self.loyality_param)) + "% от покупок возвращается бонусами!"
+            return str(round(self.loyality_param)) + "% от покупок возвращается бонусами!" + burn
         if self.loyality_type == DISCOUNT_LOYALITY:
             return "А эта программа лояльности пока не работает =)" + burn
 
