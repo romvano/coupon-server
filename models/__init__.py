@@ -16,8 +16,8 @@ TIME_CLOSE = 'time_close'
 LOGO = 'logo'
 LOYALITY_TYPE = 'loyality_type'
 LOYALITY_PARAM = 'loyality_param'
-LOYALITY_TIME_PARAM = 'time_param'
-LOYALITY_BURN_PARAM = 'burn_param'
+LOYALITY_TIME_PARAM = 'loyality_time'
+LOYALITY_BURN_PARAM = 'loyality_burn'
 
 CUP_LOYALITY = 0
 PERCENT_LOYALITY = 1
