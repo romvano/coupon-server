@@ -69,7 +69,7 @@ class Score(object):
                         if date < today - datetime.timedelta(self.loyality_time):
                             self._score.pop(date)
                 # save if changed
-                if self.loyality_burn is not None:
+                if self.loyality_burn != NO_BURN:
                     self.save()
 
     def save(self):
