@@ -28,7 +28,7 @@ class Host():
             self.logo = None
             self.loyality_type = PERCENT_LOYALITY
             self.loyality_param = 10
-            self.loyality_burn_param = None # 0 - all bonuses, 1 - partially, None - no burn
+            self.loyality_burn_param = # 0 - all bonuses, 1 - partially, None - no burn
             self.loyality_time_param = 30 # number of days until bonus burns
             self.offer = self.create_offer()
         elif uid:
